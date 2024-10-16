@@ -8,8 +8,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "babylonjs": "^7.28.0"
-  }
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "description": ""
 }
