@@ -1,0 +1,97 @@
+{
+    "planets": [
+      {
+        "name": "Mercure",
+        "radius": 0.383,
+        "distanceFromSun": 0.39,
+        "texture": "assets/textures/texture_mercure.jpg",
+        "color": "#b7b7b7",
+        "orbitalPeriod": 88,
+        "rotationPeriod": 58.6,
+        "moons": 0
+      },
+      {
+        "name": "Venus",
+        "radius": 0.949,
+        "distanceFromSun": 0.72,
+        "texture": "assets/textures/texture_venus.jpg",
+        "color": "#d2b48c",
+        "orbitalPeriod": 225,
+        "rotationPeriod": -243,
+        "moons": 0
+      },
+      {
+        "name": "Terre",
+        "radius": 1,
+        "distanceFromSun": 1,
+        "texture": "assets/textures/texture_terre.jpg",
+        "color": "#3a5b8c",
+        "orbitalPeriod": 365,
+        "rotationPeriod": 24,
+        "moons": 1
+      },
+      {
+        "name": "Mars",
+        "radius": 0.532,
+        "distanceFromSun": 1.52,
+        "texture": "assets/textures/texture_mars.jpg",
+        "color": "#b22222",
+        "orbitalPeriod": 687,
+        "rotationPeriod": 24.6,
+        "moons": 2
+      },
+      {
+        "name": "Jupiter",
+        "radius": 11.21,
+        "distanceFromSun": 5.20,
+        "texture": "assets/textures/texture_jupiter.jpg",
+        "color": "#d69a6e",
+        "orbitalPeriod": 4333,
+        "rotationPeriod": 9.9,
+        "moons": 79
+      },
+      {
+        "name": "Saturne",
+        "radius": 9.45,
+        "distanceFromSun": 9.58,
+        "texture": "assets/textures/texture_saturne.jpg",
+        "color": "#e3c9a7",
+        "orbitalPeriod": 10759,
+        "rotationPeriod": 10.7,
+        "moons": 83
+      },
+      {
+        "name": "Uranus",
+        "radius": 4.01,
+        "distanceFromSun": 19.22,
+        "texture": "assets/textures/texture_uranus.jpg",
+        "color": "#a4d8e1",
+        "orbitalPeriod": 30687,
+        "rotationPeriod": 17.2,
+        "moons": 27
+      },
+      {
+        "name": "Neptune",
+        "radius": 3.88,
+        "distanceFromSun": 30.07,
+        "texture": "assets/textures/texture_neptune.jpg",
+        "color": "#4b8dc1",
+        "orbitalPeriod": 60200,
+        "rotationPeriod": 16.1,
+        "moons": 14
+      }
+    ],
+    "astralBodies": [
+        {
+            "name": "Soleil",
+            "radius": 6.96,
+            "distanceFromSun": 0,
+            "texture": "assets/textures/texture_soleil.jpg",
+            "color": "#ffcc00",
+            "orbitalPeriod": 0,
+            "rotationPeriod": 25,
+            "moons": 0
+          }
+    ]
+  }
+  
