@@ -1,56 +1,44 @@
+import CelestialBody from "./components/CelestialBody.js";
+import Skybox from "./components/Skybox.js";
+
 const canvas = document.getElementById('renderCanvas');
 const engine = new BABYLON.Engine(canvas, true);
 
+// Créer et configurer la scène
 const createScene = () => {
     const scene = new BABYLON.Scene(engine);
 
-    // Créer et configurer la caméra
-    const camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / 2, Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+    // Créer la caméra
+    const camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / 2, Math.PI / 2, 20, BABYLON.Vector3.Zero(), scene);
     camera.attachControl(canvas, true);
 
-    // Ajouter une lumière hémisphérique pour éclairer la scène
+    // Ajouter une lumière hémisphérique
     const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
     light.intensity = 0.7;
 
-    // Créer une sphère représentant le Soleil
-    const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
+    // Créer le Soleil
+    const sun = new CelestialBody("sun", 2, new BABYLON.Vector3(0, 0, 0), "assets/textures/texture_soleil.jpg", scene);
+    sun.mesh.material.emissiveColor = new BABYLON.Color3(1, 1, 0); // Appliquer la couleur émissive
 
-    // Appliquer un matériau émissif pour simuler la luminosité du Soleil
-    const emissiveMaterial = new BABYLON.StandardMaterial("emissiveMaterial", scene);
-    emissiveMaterial.emissiveColor = new BABYLON.Color3(1, 1, 0); // Couleur jaune pour simuler la lumière solaire
-    emissiveMaterial.diffuseTexture = new BABYLON.Texture("assets/textures/texture_soleil.jpg", scene);
+    // Créer la skybox
+    const skybox = new Skybox("skyBox", 1000.0, "assets/textures/sky_texture.jpg", scene);
 
-    sphere.material = emissiveMaterial;
+    // Créer une planète (exemple : la Terre)
+    const earth = new CelestialBody("earth", 1, new BABYLON.Vector3(5, 0, 0), "assets/textures/earth_texture.jpg", scene);
 
-    // Créer une skybox (cube)
-    const skybox = BABYLON.MeshBuilder.CreateBox("skyBox", { size: 1000.0 }, scene);
-
-    // Appliquer un matériau standard avec une seule image panoramique
-    const skyboxMaterial = new BABYLON.StandardMaterial("skyBoxMaterial", scene);
-    skyboxMaterial.backFaceCulling = false; // S'assurer que l'intérieur du cube est visible
-    skyboxMaterial.reflectionTexture = new BABYLON.Texture("assets/textures/sky_texture.jpg", scene);
-    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE; // Utiliser le mode SKYBOX
-    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0); // Pas de couleur diffuse
-    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0); // Pas de réflexion spéculaire
-    skyboxMaterial.disableLighting = true; // Désactiver l'éclairage pour la skybox
-
-    skybox.material = skyboxMaterial;
-
-    return scene;
+    return { scene, sun, earth };
 };
 
 // Créer la scène
-const scene = createScene();
+const { scene, sun, earth } = createScene();
 
 // Lancer la boucle de rendu
 engine.runRenderLoop(() => {
     scene.render();
 
-    // Faire tourner la sphère représentant le Soleil
-    const soleilTourne = scene.getMeshByName("sphere");
-    if (soleilTourne) {
-        soleilTourne.rotation.y += 0.01; // Ajuster la vitesse de rotation ici
-    }
+    // Faire tourner le Soleil et la Terre
+    sun.rotate(0.01);
+    earth.rotate(0.005); // Rotation plus lente pour la Terre
 });
 
 // Adapter la taille du canvas lors du redimensionnement de la fenêtre
