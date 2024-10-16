@@ -1,3 +1,4 @@
+// app.js
 import CelestialBody from "./components/CelestialBody.js";
 import Skybox from "./components/Skybox.js";
 
@@ -8,9 +9,10 @@ const engine = new BABYLON.Engine(canvas, true);
 const createScene = () => {
     const scene = new BABYLON.Scene(engine);
 
-    // Créer la caméra
-    const camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / 2, Math.PI / 2, 20, BABYLON.Vector3.Zero(), scene);
-    camera.attachControl(canvas, true);
+    // Créer la caméra principale (vue générale)
+    const mainCamera = new BABYLON.ArcRotateCamera("mainCamera", Math.PI / 2, Math.PI / 2, 20, BABYLON.Vector3.Zero(), scene);
+    mainCamera.attachControl(canvas, true);
+    scene.activeCamera = mainCamera; // Définir la caméra principale
 
     // Ajouter une lumière hémisphérique
     const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
@@ -26,11 +28,17 @@ const createScene = () => {
     // Créer une planète (exemple : la Terre)
     const earth = new CelestialBody("earth", 1, new BABYLON.Vector3(5, 0, 0), "assets/textures/earth_texture.jpg", scene);
 
-    return { scene, sun, earth };
+    return { scene, sun, earth, mainCamera };
 };
 
 // Créer la scène
-const { scene, sun, earth } = createScene();
+const { scene, sun, earth, mainCamera } = createScene();
+
+// Gestionnaire pour le bouton de retour
+const returnButton = document.getElementById('returnButton');
+returnButton.addEventListener('click', () => {
+    scene.activeCamera = mainCamera; // Revenir à la caméra principale
+});
 
 // Lancer la boucle de rendu
 engine.runRenderLoop(() => {
