@@ -9,6 +9,10 @@ class CelestialBody {
         this.texture = texture;
         this.scene = scene;
 
+        // Définir les limites de zoom
+        this.minZoom = radius * 3.5;  // Zoom avant minimum
+        this.maxZoom = radius * 120; // Zoom arrière maximum
+
         // Créer le mesh pour le corps céleste
         this.mesh = BABYLON.MeshBuilder.CreateSphere(name, { diameter: radius, segments: 16 }, scene);
         this.mesh.position = position;
@@ -19,14 +23,20 @@ class CelestialBody {
         this.mesh.material = material;
 
         // Créer la caméra pour ce corps céleste
-        this.camera = new BABYLON.ArcRotateCamera(`${name}Camera`, Math.PI / 4, Math.PI / 4, radius + 4.5, position, scene);
+        this.camera = new BABYLON.ArcRotateCamera(`${name}Camera`, Math.PI / 4, Math.PI / 4, this.minZoom , position, scene);
         this.camera.attachControl(scene.getEngine().getRenderingCanvas(), true);
 
         // Positionner la caméra légèrement sur le côté du corps céleste
-        this.camera.position.x += radius * 3;
+        //this.camera.position.x += radius * 3;
 
         // Créer l'étiquette de texte
         this.createLabel();
+
+    
+
+        // Configurer l'écouteur de molette pour gérer le zoom par pourcentage
+        scene.getEngine().getRenderingCanvas().addEventListener('wheel', (event) => this.handleZoom(event));
+
 
         // Activer l'interaction avec le mesh du corps céleste
         this.mesh.actionManager = new BABYLON.ActionManager(scene);
@@ -88,7 +98,7 @@ class CelestialBody {
     handleInteraction() {
         // Zoomer sur la planète
         this.scene.activeCamera = this.camera;
-        this.scene.activeCamera.radius = this.radius * 3 ;
+        this.scene.activeCamera.radius = this.radius *3 ;
 
         
     }
@@ -120,6 +130,22 @@ class CelestialBody {
             this.labelRect.alpha = 1; // Rendre l'étiquette visible si non obstruée
         }
     }
+
+    // Méthode pour gérer le zoom avec la molette de la souris
+    handleZoom(event) {
+        const zoomFactor = 1.1; // Facteur de zoom de 10%
+
+        if (this.scene.activeCamera === this.camera) {
+            if (event.deltaY < 0) {
+                // Zoom avant (molette vers le haut) - réduire le rayon
+                this.camera.radius = Math.max(this.minZoom, this.camera.radius / zoomFactor);
+            } else {
+                // Zoom arrière (molette vers le bas) - augmenter le rayon
+                this.camera.radius = Math.min(this.camera.radius * zoomFactor);
+            }
+        }
+    }
+
 }
 
 

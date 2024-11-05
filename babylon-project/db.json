@@ -3,7 +3,7 @@
       {
         "name": "Mercure",
         "radius": 0.383,
-        "distanceFromSun": 0.39,
+        "distanceFromSun": 3.9,
         "texture": "assets/textures/texture_mercure.jpg",
         "color": "#b7b7b7",
         "orbitalPeriod": 88,
@@ -13,7 +13,7 @@
       {
         "name": "Venus",
         "radius": 0.949,
-        "distanceFromSun": 0.72,
+        "distanceFromSun": 7.2,
         "texture": "assets/textures/texture_venus.jpg",
         "color": "#d2b48c",
         "orbitalPeriod": 225,
@@ -23,7 +23,7 @@
       {
         "name": "Terre",
         "radius": 1,
-        "distanceFromSun": 1,
+        "distanceFromSun": 10.0,
         "texture": "assets/textures/texture_terre.jpg",
         "color": "#3a5b8c",
         "orbitalPeriod": 365,
@@ -33,7 +33,7 @@
       {
         "name": "Mars",
         "radius": 0.532,
-        "distanceFromSun": 1.52,
+        "distanceFromSun": 15.2,
         "texture": "assets/textures/texture_mars.jpg",
         "color": "#b22222",
         "orbitalPeriod": 687,
@@ -43,7 +43,7 @@
       {
         "name": "Jupiter",
         "radius": 11.21,
-        "distanceFromSun": 5.20,
+        "distanceFromSun": 52.0,
         "texture": "assets/textures/texture_jupiter.jpg",
         "color": "#d69a6e",
         "orbitalPeriod": 4333,
@@ -53,7 +53,7 @@
       {
         "name": "Saturne",
         "radius": 9.45,
-        "distanceFromSun": 9.58,
+        "distanceFromSun": 95.8,
         "texture": "assets/textures/texture_saturne.jpg",
         "color": "#e3c9a7",
         "orbitalPeriod": 10759,
@@ -63,7 +63,7 @@
       {
         "name": "Uranus",
         "radius": 4.01,
-        "distanceFromSun": 19.22,
+        "distanceFromSun": 192.2,
         "texture": "assets/textures/texture_uranus.jpg",
         "color": "#a4d8e1",
         "orbitalPeriod": 30687,
@@ -73,7 +73,7 @@
       {
         "name": "Neptune",
         "radius": 3.88,
-        "distanceFromSun": 30.07,
+        "distanceFromSun": 300.7,
         "texture": "assets/textures/texture_neptune.jpg",
         "color": "#4b8dc1",
         "orbitalPeriod": 60200,
@@ -84,7 +84,7 @@
     "astralBodies": [
         {
             "name": "Soleil",
-            "radius": 6.96,
+            "radius": 11,
             "distanceFromSun": 0,
             "texture": "assets/textures/texture_soleil.jpg",
             "color": "#ffcc00",
