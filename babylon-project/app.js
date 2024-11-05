@@ -7,6 +7,7 @@ const engine = new BABYLON.Engine(canvas, true);
 // Créer et configurer la scène
 const createScene = () => {
     const scene = new BABYLON.Scene(engine);
+    scene.clearColor = new BABYLON.Color4(0, 0, 0, 1); // Couleur de fond de la scène
 
     // Créer la caméra principale (vue générale)
     const mainCamera = new BABYLON.ArcRotateCamera("mainCamera", Math.PI / 4, Math.PI / 4, 100, new BABYLON.Vector3(0, 10, 0), scene);
@@ -23,11 +24,163 @@ const createScene = () => {
     const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
     light.intensity = 0.7;
 
-    // Créer la skybox
-    const skybox = new Skybox("skyBox", 1000.0, "assets/textures/sky_texture.jpg", scene);
+    // Fonction pour créer un système de particules pour les étoiles
+    const createStarParticleSystem = (color) => {
+        const starParticleSystem = new BABYLON.ParticleSystem("stars", 10000, scene);
+        starParticleSystem.particleTexture = new BABYLON.Texture("../skybox/blanc.png", scene); // Assurez-vous d'avoir une texture d'étoile
+
+        // Configurer les particules
+        starParticleSystem.color1 = color; // Couleur des particules
+        starParticleSystem.color2 = color; // Couleur des particules
+        starParticleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0); // Couleur des particules mortes
+
+        starParticleSystem.minSize = 0.5; // Taille minimale des particules
+        starParticleSystem.maxSize = 1.6; // Taille maximale des particules
+
+        starParticleSystem.minLifeTime = Number.MAX_VALUE; // Durée de vie minimale des particules (infinie)
+        starParticleSystem.maxLifeTime = Number.MAX_VALUE; // Durée de vie maximale des particules (infinie)
+
+        starParticleSystem.emitRate = 1000; // Taux d'émission des particules
+
+        starParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD; // Mode de mélange des particules pour augmenter la luminosité
+
+        starParticleSystem.gravity = new BABYLON.Vector3(0, 0, 0); // Gravité appliquée aux particules
+
+        starParticleSystem.direction1 = new BABYLON.Vector3(0, 0, 0); // Direction des particules
+        starParticleSystem.direction2 = new BABYLON.Vector3(0, 0, 0); // Direction des particules
+
+        starParticleSystem.minAngularSpeed = 0; // Vitesse angulaire minimale des particules
+        starParticleSystem.maxAngularSpeed = Math.PI; // Vitesse angulaire maximale des particules
+
+        starParticleSystem.minEmitPower = 0.5; // Puissance d'émission minimale des particules
+        starParticleSystem.maxEmitPower = 4; // Puissance d'émission maximale des particules
+        starParticleSystem.updateSpeed = 0.01; // Vitesse de mise à jour du système de particules
+
+        // Définir la fonction de positionnement des particules
+        starParticleSystem.startPositionFunction = function(worldMatrix, positionToUpdate) {
+            const position = randomPositionInHollowSphere(800, 2000); // Distance minimale et maximale des étoiles
+            BABYLON.Vector3.TransformCoordinatesToRef(position, worldMatrix, positionToUpdate);
+        };
+
+        // Démarrer le système de particules
+        starParticleSystem.start();
+
+        // Émettre toutes les particules manuellement
+        starParticleSystem.manualEmitCount = starParticleSystem.getCapacity();
+
+        // Désactiver l'émission continue
+        starParticleSystem.emitRate = 0;
+
+        return starParticleSystem;
+    };
+
+    // Créer des systèmes de particules pour les étoiles de différentes couleurs
+    createStarParticleSystem(new BABYLON.Color4(1, 1, 1, 1)); // Étoiles blanches
+    createStarParticleSystem(new BABYLON.Color4(1, 1, 0, 1)); // Étoiles jaunes
+    createStarParticleSystem(new BABYLON.Color4(0, 1, 1, 1)); // Étoiles cyan
+
+    // Créer un système de particules pour les étoiles filantes
+    const createShootingStarParticleSystem = () => {
+        const shootingStarParticleSystem = new BABYLON.ParticleSystem("shootingStars", 100, scene);
+        shootingStarParticleSystem.particleTexture = new BABYLON.Texture("../skybox/blanc.png", scene); // Assurez-vous d'avoir une texture d'étoile
+
+        // Configurer les particules
+        shootingStarParticleSystem.color1 = new BABYLON.Color4(1, 1, 1, 1); // Couleur des particules
+        shootingStarParticleSystem.color2 = new BABYLON.Color4(1, 1, 1, 1); // Couleur des particules
+        shootingStarParticleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0); // Couleur des particules mortes
+
+        shootingStarParticleSystem.minSize = 0.5; // Taille minimale des particules
+        shootingStarParticleSystem.maxSize = 1.5; // Taille maximale des particules
+
+        shootingStarParticleSystem.minLifeTime = 0.5; // Durée de vie minimale des particules
+        shootingStarParticleSystem.maxLifeTime = 1.5; // Durée de vie maximale des particules
+
+        shootingStarParticleSystem.emitRate = 1; // Taux d'émission des particules
+
+        shootingStarParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD; // Mode de mélange des particules pour augmenter la luminosité
+
+        shootingStarParticleSystem.gravity = new BABYLON.Vector3(0, 0, 0); // Gravité appliquée aux particules
+
+        shootingStarParticleSystem.direction1 = new BABYLON.Vector3(-1, -1, -1); // Direction des particules
+        shootingStarParticleSystem.direction2 = new BABYLON.Vector3(1, 1, 1); // Direction des particules
+
+        shootingStarParticleSystem.minEmitPower = 5; // Puissance d'émission minimale des particules
+        shootingStarParticleSystem.maxEmitPower = 10; // Puissance d'émission maximale des particules
+        shootingStarParticleSystem.updateSpeed = 0.01; // Vitesse de mise à jour du système de particules
+
+        // Définir la fonction de positionnement des particules
+        shootingStarParticleSystem.startPositionFunction = function(worldMatrix, positionToUpdate) {
+            const position = randomPositionInHollowSphere(8000, 2000); // Distance minimale et maximale des étoiles filantes
+            BABYLON.Vector3.TransformCoordinatesToRef(position, worldMatrix, positionToUpdate);
+        };
+
+        // Créer un système de particules pour les traînées
+        const trailParticleSystem = new BABYLON.ParticleSystem("trails", 100, scene);
+        trailParticleSystem.particleTexture = new BABYLON.Texture("../skybox/blanc.png", scene); // Assurez-vous d'avoir une texture d'étoile
+
+        // Configurer les particules de la traînée
+        trailParticleSystem.color1 = new BABYLON.Color4(1, 1, 1, 1); // Couleur des particules
+        trailParticleSystem.color2 = new BABYLON.Color4(1, 1, 1, 1); // Couleur des particules
+        trailParticleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0); // Couleur des particules mortes
+
+        trailParticleSystem.minSize = 0.1; // Taille minimale des particules
+        trailParticleSystem.maxSize = 0.5; // Taille maximale des particules
+
+        trailParticleSystem.minLifeTime = 0.2; // Durée de vie minimale des particules
+        trailParticleSystem.maxLifeTime = 0.5; // Durée de vie maximale des particules
+
+        trailParticleSystem.emitRate = 50; // Taux d'émission des particules
+
+        trailParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD; // Mode de mélange des particules pour augmenter la luminosité
+
+        trailParticleSystem.gravity = new BABYLON.Vector3(0, 0, 0); // Gravité appliquée aux particules
+
+        trailParticleSystem.direction1 = new BABYLON.Vector3(1, 0, 0); // Direction des particules
+        trailParticleSystem.direction2 = new BABYLON.Vector3(0, 0, 0); // Direction des particules
+
+        trailParticleSystem.minEmitPower = 1; // Puissance d'émission minimale des particules
+        trailParticleSystem.maxEmitPower = 2; // Puissance d'émission maximale des particules
+        trailParticleSystem.updateSpeed = 0.01; // Vitesse de mise à jour du système de particules
+
+        // Attacher le système de particules de la traînée à chaque particule d'étoile filante
+        shootingStarParticleSystem.updateFunction = function(particles) {
+            particles.forEach(particle => {
+                trailParticleSystem.manualEmitCount = 1;
+                trailParticleSystem.startPositionFunction = function(worldMatrix, positionToUpdate) {
+                    positionToUpdate.copyFrom(particle.position);
+                };
+            });
+        };
+
+        // Démarrer les systèmes de particules
+        shootingStarParticleSystem.start();
+        trailParticleSystem.start();
+
+        return shootingStarParticleSystem;
+    };
+
+    // Créer le système de particules pour les étoiles filantes
+    createShootingStarParticleSystem();
 
     return { scene, mainCamera };
 };
+
+// Fonction pour générer des positions aléatoires dans une sphère creuse
+function randomPositionInHollowSphere(minRadius, maxRadius) {
+    const u = Math.random();
+    const v = Math.random();
+    const theta = 2 * Math.PI * u;
+    const phi = Math.acos(2 * v - 1);
+    const r = Math.cbrt(Math.random() * (Math.pow(maxRadius, 3) - Math.pow(minRadius, 3)) + Math.pow(minRadius, 3));
+    const sinTheta = Math.sin(theta);
+    const cosTheta = Math.cos(theta);
+    const sinPhi = Math.sin(phi);
+    const cosPhi = Math.cos(phi);
+    const x = r * sinPhi * cosTheta;
+    const y = r * sinPhi * sinTheta;
+    const z = r * cosPhi;
+    return new BABYLON.Vector3(x, y, z);
+}
 
 // Charger les données depuis db.json et créer les corps célestes
 const loadCelestialBodies = async (scene) => {

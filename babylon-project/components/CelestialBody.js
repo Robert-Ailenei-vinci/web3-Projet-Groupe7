@@ -1,4 +1,7 @@
+import planetDataRetrieval from './api/planetDataRetrieval.js'
+
 class CelestialBody {
+    
     constructor(name, radius, position, texture, scene) {
         this.name = name;
         this.radius = radius;
@@ -27,9 +30,25 @@ class CelestialBody {
 
         // Activer l'interaction avec le mesh du corps céleste
         this.mesh.actionManager = new BABYLON.ActionManager(scene);
+
+        // Enregistrer une action pour gérer le clic gauche sur le mesh
         this.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
             this.handleInteraction();
+            
         }));
+
+        this.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, async () => {
+            try {
+                const planetDetails = await planetDataRetrieval(this.name);
+                console.log('Fetched Planet Details:', planetDetails);
+            } catch (error) {
+                console.error('Error fetching planet details:', error);
+            }
+        }));
+
+
+        // Appeler la mise à jour de la visibilité du label dans la boucle de rendu
+        scene.onBeforeRenderObservable.add(() => this.updateLabelVisibility());
     }
 
     rotate(speed) {
@@ -76,6 +95,21 @@ class CelestialBody {
             this.labelRect.alpha = 0.2; // Ajuste l'opacité (0 pour invisible, 1 pour opaque)
         }
     }
+
+    // Met à jour la visibilité du label en fonction de la distance de la caméra
+    updateLabelVisibility() {
+        const distance = BABYLON.Vector3.Distance(this.scene.activeCamera.position, this.mesh.position);
+
+        // Ajuste l'opacité du label en fonction de la distance (seuil = radius * 5 par exemple)
+        if (distance < this.radius * 5) {
+            this.labelRect.alpha = 0; // Rendre l'étiquette invisible quand proche
+        } else {
+            this.labelRect.alpha = 1; // Rendre l'étiquette visible quand éloigné
+        }
+    }
 }
 
+
+
+// Exporter la classe pour l'utiliser dans d'autres fichiers
 export default CelestialBody;

@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "babylonjs-materials": "^7.32.3"
+  }
+}
