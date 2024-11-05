@@ -1,4 +1,4 @@
-import planetDataRetrieval from './api/planetDataRetrieval.js'
+import planetDataRetrieval from './api/planetDataRetrieval.js';
 
 class CelestialBody {
     
@@ -22,21 +22,18 @@ class CelestialBody {
         material.diffuseTexture = new BABYLON.Texture(texture, scene);
         this.mesh.material = material;
 
-        // Créer la caméra pour ce corps céleste
-        this.camera = new BABYLON.ArcRotateCamera(`${name}Camera`, Math.PI / 4, Math.PI / 4, this.minZoom , position, scene);
-        this.camera.attachControl(scene.getEngine().getRenderingCanvas(), true);
+        // Créer l'orbite autour du corps céleste
+        this.createOrbit();
 
-        // Positionner la caméra légèrement sur le côté du corps céleste
-        //this.camera.position.x += radius * 3;
+        // Créer la caméra pour ce corps céleste
+        this.camera = new BABYLON.ArcRotateCamera(`${name}Camera`, Math.PI / 4, Math.PI / 4, this.minZoom, position, scene);
+        this.camera.attachControl(scene.getEngine().getRenderingCanvas(), true);
 
         // Créer l'étiquette de texte
         this.createLabel();
 
-    
-
         // Configurer l'écouteur de molette pour gérer le zoom par pourcentage
         scene.getEngine().getRenderingCanvas().addEventListener('wheel', (event) => this.handleZoom(event));
-
 
         // Activer l'interaction avec le mesh du corps céleste
         this.mesh.actionManager = new BABYLON.ActionManager(scene);
@@ -44,7 +41,6 @@ class CelestialBody {
         // Enregistrer une action pour gérer le clic gauche sur le mesh
         this.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
             this.handleInteraction();
-            
         }));
 
         this.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, async () => {
@@ -56,7 +52,6 @@ class CelestialBody {
             }
         }));
 
-
         // Appeler la mise à jour de la visibilité du label dans la boucle de rendu
         scene.onBeforeRenderObservable.add(() => this.updateLabelVisibility());
     }
@@ -65,18 +60,29 @@ class CelestialBody {
         this.mesh.rotation.y += speed;
     }
 
+    // Fonction pour créer une orbite circulaire autour du corps céleste
+    createOrbit() {
+        const points = [];
+        const orbitRadius = this.position.length(); // Distance du centre de la scène
+        for (let i = 0; i <= 100; i++) {
+            const angle = (i / 100) * 2 * Math.PI;
+            const x = orbitRadius * Math.cos(angle);
+            const z = orbitRadius * Math.sin(angle);
+            points.push(new BABYLON.Vector3(x, 0, z));
+        }
+        const orbit = BABYLON.MeshBuilder.CreateLines(`${this.name}Orbit`, { points: points }, this.scene);
+        orbit.color = new BABYLON.Color3(1, 1, 1); // Couleur blanche pour les orbites
+    }
+
     // Créer un label 2D
     createLabel() {
-        // Créer une texture dynamique pour le GUI
         const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-        // Créer le texte de l'étiquette
         const label = new BABYLON.GUI.TextBlock();
         label.text = this.name;
         label.color = "white";
         label.fontSize = 24;
 
-        // Conteneur pour positionner l'étiquette par rapport à la planète
         this.labelRect = new BABYLON.GUI.Rectangle();
         this.labelRect.width = "150px";
         this.labelRect.height = "40px";
@@ -84,11 +90,9 @@ class CelestialBody {
         this.labelRect.linkOffsetY = -this.radius * 2;
         this.labelRect.addControl(label);
 
-        // Lier l'étiquette à la planète
         advancedTexture.addControl(this.labelRect);
         this.labelRect.linkWithMesh(this.mesh);
 
-        // Rendre l'étiquette cliquable
         this.labelRect.onPointerClickObservable.add(() => {
             this.handleInteraction();
         });
@@ -96,38 +100,20 @@ class CelestialBody {
 
     // Méthode pour gérer l'interaction de zoom et de transparence
     handleInteraction() {
-        // Zoomer sur la planète
         this.scene.activeCamera = this.camera;
-        this.scene.activeCamera.radius = this.radius *3 ;
-
-        
+        this.scene.activeCamera.radius = this.radius * 3;
     }
 
-    // Met à jour la visibilité du label en fonction de la distance de la caméra et des obstructions
+    // Met à jour la visibilité du label en fonction de la distance de la caméra uniquement
     updateLabelVisibility() {
         const camera = this.scene.activeCamera;
         const distance = BABYLON.Vector3.Distance(camera.position, this.mesh.position);
 
-        // Ajuste l'opacité du label en fonction de la distance (seuil = radius * 5 par exemple)
+        // Ajuste l'opacité du label en fonction de la distance uniquement
         if (distance < this.radius * 5) {
             this.labelRect.alpha = 0; // Rendre l'étiquette invisible quand proche
-            return;
         } else {
             this.labelRect.alpha = 1; // Rendre l'étiquette visible quand éloigné
-        }
-
-        // Créer un rayon partant de la caméra vers le label
-        const direction = this.mesh.position.subtract(camera.position).normalize();
-        const ray = new BABYLON.Ray(camera.position, direction, distance);
-
-        // Utiliser le raycast pour vérifier les collisions
-        const hit = this.scene.pickWithRay(ray, (mesh) => mesh !== this.mesh);
-
-        // Rendre l'étiquette invisible si un autre corps céleste bloque la vue
-        if (hit.hit) {
-            this.labelRect.alpha = 0; // Rendre l'étiquette transparente si obstruée
-        } else {
-            this.labelRect.alpha = 1; // Rendre l'étiquette visible si non obstruée
         }
     }
 
@@ -145,10 +131,7 @@ class CelestialBody {
             }
         }
     }
-
 }
-
-
 
 // Exporter la classe pour l'utiliser dans d'autres fichiers
 export default CelestialBody;
