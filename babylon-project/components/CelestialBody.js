@@ -69,29 +69,37 @@ class CelestialBody {
     createLabel() {
         // Créer une texture dynamique pour le GUI
         const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-
-        // Créer le texte de l'étiquette
+    
+        // Créer un label circulaire
+        const circle = new BABYLON.GUI.Ellipse();
+        circle.width = "60px";
+        circle.height = "60px";
+        circle.thickness = 2;
+        circle.color = "white";
+        circle.background = "black"; // Couleur de fond du cercle
+    
+        // Ajouter le texte dans le cercle
         const label = new BABYLON.GUI.TextBlock();
         label.text = this.name;
         label.color = "white";
-        label.fontSize = 24;
-
-        // Conteneur pour positionner l'étiquette par rapport à la planète
-        this.labelRect = new BABYLON.GUI.Rectangle();
-        this.labelRect.width = "150px";
-        this.labelRect.height = "40px";
-        this.labelRect.thickness = 0;
-        this.labelRect.linkOffsetY = -this.radius * 2;
-        this.labelRect.addControl(label);
-
-        // Lier l'étiquette à la planète
-        advancedTexture.addControl(this.labelRect);
-        this.labelRect.linkWithMesh(this.mesh);
-
-        // Rendre l'étiquette cliquable
-        this.labelRect.onPointerClickObservable.add(() => {
+        label.fontSize = 14;
+        circle.addControl(label); // Ajouter le texte dans le cercle
+    
+        // Ajouter le cercle au GUI
+        advancedTexture.addControl(circle);
+        circle.linkWithMesh(this.mesh); // Attache le label à la position de la planète
+        circle.linkOffsetX = this.radius + 119.5; // Positionne le label légèrement à côté de la planète
+        circle.linkOffsetY = -this.radius + 3.5; // Ajuste légèrement la hauteur du label par rapport à la planète
+    
+        
+    
+        // Rendre le cercle cliquable
+        circle.onPointerClickObservable.add(() => {
             this.handleInteraction();
         });
+    
+        // Stocker les références pour pouvoir ajuster la visibilité
+        this.labelCircle = circle;
     }
 
     // Méthode pour gérer l'interaction de zoom et de transparence
@@ -110,10 +118,12 @@ class CelestialBody {
 
         // Ajuste l'opacité du label en fonction de la distance (seuil = radius * 5 par exemple)
         if (distance < this.radius * 5) {
-            this.labelRect.alpha = 0; // Rendre l'étiquette invisible quand proche
+            this.labelCircle.alpha = 0; // Rendre l'étiquette invisible quand proche
+           // this.labelLine.alpha = 0; // Rendre l'étiquette invisible quand proche
             return;
         } else {
-            this.labelRect.alpha = 1; // Rendre l'étiquette visible quand éloigné
+            this.labelCircle.alpha = 1; // Rendre l'étiquette visible quand éloigné
+            //this.labelLine.alpha = 1; // Rendre l'étiquette visible quand éloigné
         }
 
         // Créer un rayon partant de la caméra vers le label
@@ -125,9 +135,11 @@ class CelestialBody {
 
         // Rendre l'étiquette invisible si un autre corps céleste bloque la vue
         if (hit.hit) {
-            this.labelRect.alpha = 0; // Rendre l'étiquette transparente si obstruée
+            this.labelCircle.alpha = 0; // Rendre l'étiquette invisible quand proche
+            //this.labelLine.alpha = 0;
         } else {
-            this.labelRect.alpha = 1; // Rendre l'étiquette visible si non obstruée
+            this.labelCircle.alpha = 1; // Rendre l'étiquette visible quand éloigné
+            //this.labelLine.alpha = 1;
         }
     }
 
