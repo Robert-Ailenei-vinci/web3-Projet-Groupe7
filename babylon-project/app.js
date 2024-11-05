@@ -88,8 +88,8 @@ const createScene = () => {
 };
 
 // Créer des étoiles filantes toutes les 5 secondes
-setInterval(createRandomShootingStar, 5000);
-
+setInterval(createRandomShootingStar, 3000);
+  // Créer des nuages cosmiques
     return { scene, mainCamera };
 };
 
