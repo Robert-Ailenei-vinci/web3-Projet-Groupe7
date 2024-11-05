@@ -1,4 +1,7 @@
+import planetDataRetrieval from './api/planetDataRetrieval.js'
+
 class CelestialBody {
+    
     constructor(name, radius, position, texture, scene) {
         this.name = name;
         this.radius = radius;
@@ -24,8 +27,22 @@ class CelestialBody {
 
         // Activer l'interaction avec le corps céleste
         this.mesh.actionManager = new BABYLON.ActionManager(scene);
+
+        // Enregistrer une action pour gérer le clic gauche sur le mesh
         this.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
+            console.log(`Left click on ${this.name}`);
             scene.activeCamera = this.camera; // Passer à la caméra du corps céleste
+        }));
+
+        // Enregistrer une action pour gérer le clic droit sur le mesh
+        this.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, async () => {
+            console.log(`Right click on ${this.name}`);
+            try {
+                const planetDetails = await planetDataRetrieval(this.name);
+                console.log('Fetched Planet Details:', planetDetails);
+            } catch (error) {
+                console.error('Error fetching planet details:', error);
+            }
         }));
     }
 
@@ -33,7 +50,6 @@ class CelestialBody {
         this.mesh.rotation.y += speed;
     }
 }
-
 
 // Exporter la classe pour l'utiliser dans d'autres fichiers
 export default CelestialBody;
