@@ -90,21 +90,34 @@ class CelestialBody {
         this.scene.activeCamera = this.camera;
         this.scene.activeCamera.radius = this.radius * 3 ;
 
-        // Rendre l'étiquette transparente
-        if (this.labelRect) {
-            this.labelRect.alpha = 0.2; // Ajuste l'opacité (0 pour invisible, 1 pour opaque)
-        }
+        
     }
 
-    // Met à jour la visibilité du label en fonction de la distance de la caméra
+    // Met à jour la visibilité du label en fonction de la distance de la caméra et des obstructions
     updateLabelVisibility() {
-        const distance = BABYLON.Vector3.Distance(this.scene.activeCamera.position, this.mesh.position);
+        const camera = this.scene.activeCamera;
+        const distance = BABYLON.Vector3.Distance(camera.position, this.mesh.position);
 
         // Ajuste l'opacité du label en fonction de la distance (seuil = radius * 5 par exemple)
         if (distance < this.radius * 5) {
             this.labelRect.alpha = 0; // Rendre l'étiquette invisible quand proche
+            return;
         } else {
             this.labelRect.alpha = 1; // Rendre l'étiquette visible quand éloigné
+        }
+
+        // Créer un rayon partant de la caméra vers le label
+        const direction = this.mesh.position.subtract(camera.position).normalize();
+        const ray = new BABYLON.Ray(camera.position, direction, distance);
+
+        // Utiliser le raycast pour vérifier les collisions
+        const hit = this.scene.pickWithRay(ray, (mesh) => mesh !== this.mesh);
+
+        // Rendre l'étiquette invisible si un autre corps céleste bloque la vue
+        if (hit.hit) {
+            this.labelRect.alpha = 0; // Rendre l'étiquette transparente si obstruée
+        } else {
+            this.labelRect.alpha = 1; // Rendre l'étiquette visible si non obstruée
         }
     }
 }
