@@ -1,4 +1,5 @@
 import planetDataRetrieval from './api/planetDataRetrieval.js';
+import { uiPlanetDetails } from './uiPlanetDetails/uiPlanetDetails.js';
 
 class CelestialBody {
     constructor(name, radius, position, texture, scene) {
@@ -47,11 +48,41 @@ class CelestialBody {
             this.handleInteraction();
         }));
 
+        // Create the UI and get the text block
+        const textBlock = uiPlanetDetails();
+
         // Fetch additional planet details when the mesh is clicked
         this.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, async () => {
             try {
                 const planetDetails = await planetDataRetrieval(this.name);
-                console.log('Fetched Planet Details:', planetDetails);
+                // Update the text block with the planet details
+                textBlock.text = `
+                    Nom: ${planetDetails.name}
+                    Nom en anglais: ${planetDetails.englishName}
+                    Est une planète: ${planetDetails.isPlanet ? 'Oui' : 'Non'}
+                    Lunes: ${planetDetails.moons ? planetDetails.moons.length : 'Aucune'}
+                    Aphélie: ${planetDetails.aphelion} km
+                    Périhélie: ${planetDetails.perihelion} km
+                    Demi-grand axe: ${planetDetails.semimajorAxis} km
+                    Excentricité: ${planetDetails.eccentricity}
+                    Inclinaison: ${planetDetails.inclination}°
+                    Masse: ${planetDetails.mass.massValue} x 10^${planetDetails.mass.massExponent} kg
+                    Volume: ${planetDetails.vol.volValue} x 10^${planetDetails.vol.volExponent} km³
+                    Densité: ${planetDetails.density} g/cm³
+                    Gravité: ${planetDetails.gravity} m/s²
+                    Vitesse d'échappement: ${planetDetails.escape} m/s
+                    Rayon moyen: ${planetDetails.meanRadius} km
+                    Rayon équatorial: ${planetDetails.equaRadius} km
+                    Rayon polaire: ${planetDetails.polarRadius} km
+                    Aplatissement: ${planetDetails.flattening}
+                    Inclinaison axiale: ${planetDetails.axialTilt}°
+                    Température moyenne: ${planetDetails.avgTemp} K
+                    Orbite sidérale: ${planetDetails.sideralOrbit} jours
+                    Rotation sidérale: ${planetDetails.sideralRotation} heures
+                `;
+
+                console.log(planetDetails.name)
+                console.log(planetDetails.englishName)
             } catch (error) {
                 console.error('Error fetching planet details:', error);
             }
