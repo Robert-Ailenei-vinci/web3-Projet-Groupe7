@@ -21,12 +21,12 @@ const createScene = () => {
 
     // Ajouter une lumière hémisphérique
     const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
-    light.intensity = 0.7;
+    light.intensity = 10;
 
     // Fonction pour créer un système de particules pour les étoiles
     const createStarParticleSystem = (color) => {
         const starParticleSystem = new BABYLON.ParticleSystem("stars", 10000, scene);
-        starParticleSystem.particleTexture = new BABYLON.Texture("../skybox/blanc.png", scene); // Assurez-vous d'avoir une texture d'étoile
+        starParticleSystem.particleTexture = new BABYLON.Texture("/assets/skybox/blanc.png", scene); // Assurez-vous d'avoir une texture d'étoile
 
         // Configurer les particules
         starParticleSystem.color1 = color; // Couleur des particules

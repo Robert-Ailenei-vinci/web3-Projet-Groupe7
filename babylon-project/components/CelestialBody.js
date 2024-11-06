@@ -1,7 +1,6 @@
-import planetDataRetrieval from './api/planetDataRetrieval.js'
+import planetDataRetrieval from './api/planetDataRetrieval.js';
 
 class CelestialBody {
-    
     constructor(name, radius, position, texture, scene) {
         this.name = name;
         this.radius = radius;
@@ -9,44 +8,46 @@ class CelestialBody {
         this.texture = texture;
         this.scene = scene;
 
-        // Définir les limites de zoom
-        this.minZoom = radius * 3.5;  // Zoom avant minimum
-        this.maxZoom = radius * 120; // Zoom arrière maximum
+        // Define the min and max zoom limits
+        this.minZoom = radius * 3.5;  // Minimum zoom in
+        this.maxZoom = radius * 120;  // Maximum zoom out
 
-        // Créer le mesh pour le corps céleste
+        // Create the mesh for the celestial body
         this.mesh = BABYLON.MeshBuilder.CreateSphere(name, { diameter: radius, segments: 16 }, scene);
         this.mesh.position = position;
 
-        // Appliquer le matériau
+        // Apply the material
         const material = new BABYLON.StandardMaterial(`${name}Material`, scene);
         material.diffuseTexture = new BABYLON.Texture(texture, scene);
         this.mesh.material = material;
 
-        // Créer la caméra pour ce corps céleste
-        this.camera = new BABYLON.ArcRotateCamera(`${name}Camera`, Math.PI / 4, Math.PI / 4, this.minZoom , position, scene);
+        // Define a fixed camera offset position (adjusted for a good view)
+        const cameraOffset = new BABYLON.Vector3(radius * 3, radius * 1.5, radius * 2);  // Adjust as needed
+
+        // Create a TargetCamera for the celestial body
+        this.camera = new BABYLON.TargetCamera(`${name}Camera`, position.add(cameraOffset), scene);
+
+        // Set the camera's target to the celestial body
+        this.camera.setTarget(this.mesh.position);
+
+        // Attach the camera controls for interactivity
         this.camera.attachControl(scene.getEngine().getRenderingCanvas(), true);
 
-        // Positionner la caméra légèrement sur le côté du corps céleste
-        //this.camera.position.x += radius * 3;
-
-        // Créer l'étiquette de texte
-        this.createLabel();
-
-    
-
-        // Configurer l'écouteur de molette pour gérer le zoom par pourcentage
+        // Set up an event listener to handle zooming
         scene.getEngine().getRenderingCanvas().addEventListener('wheel', (event) => this.handleZoom(event));
 
+        // Create the label for the celestial body
+        this.createLabel();
 
-        // Activer l'interaction avec le mesh du corps céleste
+        // Enable interaction with the celestial body's mesh
         this.mesh.actionManager = new BABYLON.ActionManager(scene);
 
-        // Enregistrer une action pour gérer le clic gauche sur le mesh
+        // Register an action for handling left-click on the mesh
         this.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
             this.handleInteraction();
-            
         }));
 
+        // Fetch additional planet details when the mesh is clicked
         this.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, async () => {
             try {
                 const planetDetails = await planetDataRetrieval(this.name);
@@ -56,10 +57,10 @@ class CelestialBody {
             }
         }));
 
-
-        // Appeler la mise à jour de la visibilité du label dans la boucle de rendu
+        // Update label visibility on each render
         scene.onBeforeRenderObservable.add(() => this.updateLabelVisibility());
     }
+
 
     rotate(speed) {
         this.mesh.rotation.y += speed;
