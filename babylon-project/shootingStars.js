@@ -5,7 +5,11 @@ export const createShootingStar = (scene, startPosition, endPosition, color) => 
     const trail = new BABYLON.TrailMesh("trail", shootingStar, scene, 0.2, 30, true);
     const trailMaterial = new BABYLON.StandardMaterial("trailMaterial", scene);
     trailMaterial.emissiveColor = color;
-    trail.material = trailMaterial;
+    
+    // Attendre 1 seconde avant de créer la traînée
+    setTimeout(() => {
+        trail.material = trailMaterial;
+    }, 5000);
 
     const animation = new BABYLON.Animation(
         "shootingStarAnimation",

@@ -19,14 +19,12 @@ const createScene = () => {
         scene.activeCamera = mainCamera; // Revenir à la caméra principale
     });
 
-    // Ajouter une lumière hémisphérique
-    const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
-    light.intensity = 10;
+    
 
     // Fonction pour créer un système de particules pour les étoiles
     const createStarParticleSystem = (color) => {
         const starParticleSystem = new BABYLON.ParticleSystem("stars", 10000, scene);
-        starParticleSystem.particleTexture = new BABYLON.Texture("/assets/skybox/blanc.png", scene); // Assurez-vous d'avoir une texture d'étoile
+        starParticleSystem.particleTexture = new BABYLON.Texture("../skybox/blanc.png", scene); // Assurez-vous d'avoir une texture d'étoile
 
         // Configurer les particules
         starParticleSystem.color1 = color; // Couleur des particules
@@ -34,12 +32,12 @@ const createScene = () => {
         starParticleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0); // Couleur des particules mortes
 
         starParticleSystem.minSize = 0.5; // Taille minimale des particules
-        starParticleSystem.maxSize = 1.6; // Taille maximale des particules
+        starParticleSystem.maxSize = 3; // Taille maximale des particules
 
         starParticleSystem.minLifeTime = Number.MAX_VALUE; // Durée de vie minimale des particules (infinie)
         starParticleSystem.maxLifeTime = Number.MAX_VALUE; // Durée de vie maximale des particules (infinie)
 
-        starParticleSystem.emitRate = 1000; // Taux d'émission des particules
+        starParticleSystem.emitRate = 10; // Taux d'émission des particules
 
         starParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD; // Mode de mélange des particules pour augmenter la luminosité
 
@@ -52,7 +50,7 @@ const createScene = () => {
         starParticleSystem.maxAngularSpeed = Math.PI; // Vitesse angulaire maximale des particules
 
         starParticleSystem.minEmitPower = 0.5; // Puissance d'émission minimale des particules
-        starParticleSystem.maxEmitPower = 4; // Puissance d'émission maximale des particules
+        starParticleSystem.maxEmitPower = 100; // Puissance d'émission maximale des particules
         starParticleSystem.updateSpeed = 0.01; // Vitesse de mise à jour du système de particules
 
         // Définir la fonction de positionnement des particules
@@ -87,7 +85,7 @@ const createScene = () => {
 };
 
 // Créer des étoiles filantes toutes les 5 secondes
-setInterval(createRandomShootingStar, 2000);
+setInterval(createRandomShootingStar, 5000);
   // Créer des nuages cosmiques
     return { scene, mainCamera };
 };
