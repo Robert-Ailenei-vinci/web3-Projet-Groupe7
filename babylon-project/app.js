@@ -1,5 +1,4 @@
 import CelestialBody from './components/CelestialBody.js';
-import Skybox from './components/Skybox.js';
 import { createShootingStar } from './shootingStars.js';
 const canvas = document.getElementById('renderCanvas');
 const engine = new BABYLON.Engine(canvas, true);
@@ -88,7 +87,7 @@ const createScene = () => {
 };
 
 // Créer des étoiles filantes toutes les 5 secondes
-setInterval(createRandomShootingStar, 3000);
+setInterval(createRandomShootingStar, 2000);
   // Créer des nuages cosmiques
     return { scene, mainCamera };
 };
