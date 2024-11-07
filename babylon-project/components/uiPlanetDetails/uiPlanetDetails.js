@@ -6,7 +6,7 @@ export function uiPlanetDetails() {
 
     // Create a container for the text block
     const rect = new BABYLON.GUI.Rectangle();
-    rect.width = "220px"; // Adjust the width as needed
+    rect.width = "250px"; // Adjust the width as needed
     rect.height = "100%";
     rect.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     rect.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;

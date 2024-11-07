@@ -44,19 +44,17 @@ class CelestialBody {
         this.mesh.actionManager = new BABYLON.ActionManager(scene);
 
         // Register an action for handling left-click on the mesh
-        this.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
-            this.handleInteraction();
-        }));
-
-        // Create the UI and get the text block
-        const textBlock = uiPlanetDetails();
-
-        // Fetch additional planet details when the mesh is clicked
         this.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, async () => {
-            try {
-                const planetDetails = await planetDataRetrieval(this.name);
-                // Update the text block with the planet details
-                textBlock.text = `
+            this.handleInteraction();
+            // Create the UI and get the text block
+            const textBlock = uiPlanetDetails();
+
+            // Fetch additional planet details when the mesh is clicked
+            
+                try {
+                    const planetDetails = await planetDataRetrieval(this.name);
+                    // Update the text block with the planet details
+                    textBlock.text = `
                     Nom: ${planetDetails.name}
                     Nom en anglais: ${planetDetails.englishName}
                     Est une planète: ${planetDetails.isPlanet ? 'Oui' : 'Non'}
@@ -81,12 +79,15 @@ class CelestialBody {
                     Rotation sidérale: ${planetDetails.sideralRotation} heures
                 `;
 
-                console.log(planetDetails.name)
-                console.log(planetDetails.englishName)
-            } catch (error) {
-                console.error('Error fetching planet details:', error);
-            }
+                } catch (error) {
+                    console.error('Error fetching planet details:', error);
+                }
+    
+
+
         }));
+
+
 
         // Update label visibility on each render
         scene.onBeforeRenderObservable.add(() => this.updateLabelVisibility());
@@ -101,7 +102,7 @@ class CelestialBody {
     createLabel() {
         // Créer une texture dynamique pour le GUI
         const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-    
+
         // Créer un label circulaire
         const circle = new BABYLON.GUI.Ellipse();
         circle.width = "60px";
@@ -109,27 +110,27 @@ class CelestialBody {
         circle.thickness = 2;
         circle.color = "white";
         circle.background = "black"; // Couleur de fond du cercle
-    
+
         // Ajouter le texte dans le cercle
         const label = new BABYLON.GUI.TextBlock();
         label.text = this.name;
         label.color = "white";
         label.fontSize = 14;
         circle.addControl(label); // Ajouter le texte dans le cercle
-    
+
         // Ajouter le cercle au GUI
         advancedTexture.addControl(circle);
         circle.linkWithMesh(this.mesh); // Attache le label à la position de la planète
         circle.linkOffsetX = this.radius + 119.5; // Positionne le label légèrement à côté de la planète
         circle.linkOffsetY = -this.radius + 3.5; // Ajuste légèrement la hauteur du label par rapport à la planète
-    
-        
-    
+
+
+
         // Rendre le cercle cliquable
         circle.onPointerClickObservable.add(() => {
             this.handleInteraction();
         });
-    
+
         // Stocker les références pour pouvoir ajuster la visibilité
         this.labelCircle = circle;
     }
@@ -138,9 +139,9 @@ class CelestialBody {
     handleInteraction() {
         // Zoomer sur la planète
         this.scene.activeCamera = this.camera;
-        this.scene.activeCamera.radius = this.radius *3 ;
+        this.scene.activeCamera.radius = this.radius * 3;
 
-        
+
     }
 
     // Met à jour la visibilité du label en fonction de la distance de la caméra et des obstructions
@@ -151,7 +152,7 @@ class CelestialBody {
         // Ajuste l'opacité du label en fonction de la distance (seuil = radius * 5 par exemple)
         if (distance < this.radius * 5) {
             this.labelCircle.alpha = 0; // Rendre l'étiquette invisible quand proche
-           // this.labelLine.alpha = 0; // Rendre l'étiquette invisible quand proche
+            // this.labelLine.alpha = 0; // Rendre l'étiquette invisible quand proche
             return;
         } else {
             this.labelCircle.alpha = 1; // Rendre l'étiquette visible quand éloigné
