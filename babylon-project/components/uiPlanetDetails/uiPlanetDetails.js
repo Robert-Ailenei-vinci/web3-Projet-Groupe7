@@ -1,29 +1,43 @@
-// createPlanetInfoUI.js
-
 export function uiPlanetDetails() {
-    // Create a full screen UI
+
     const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-    // Create a container for the text block
     const rect = new BABYLON.GUI.Rectangle();
-    rect.width = "250px"; // Adjust the width as needed
+    rect.width = "350px";
     rect.height = "100%";
     rect.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     rect.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
     rect.background = "black";
-    rect.alpha = 1; // Adjust transparency as needed
+    rect.alpha = 1;
     advancedTexture.addControl(rect);
 
-    // Create a text block
-    const textBlock = new BABYLON.GUI.TextBlock();
-    textBlock.text = "";
-    textBlock.color = "white";
-    textBlock.fontSize = 15;
-    textBlock.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-    textBlock.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-    textBlock.paddingTop = "20px"; // Adjust padding as needed
-    textBlock.paddingLeft = "-70px"; // Adjust padding as needed
-    rect.addControl(textBlock);
+    const grid = new BABYLON.GUI.Grid();
+    grid.addColumnDefinition(0.5);
+    grid.addColumnDefinition(0.5);
+    grid.width = "100%";
+    grid.height = "100%";
+    rect.addControl(grid);
 
-    return textBlock;
+    return grid;
+}
+
+export function addRow(grid, label, value) {
+    const rowIndex = grid.rowCount;
+    const labelText = new BABYLON.GUI.TextBlock();
+    labelText.text = label;
+    labelText.color = "white";
+    labelText.fontSize = 15;
+    labelText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    labelText.paddingTop = "10px";
+    grid.addControl(labelText, rowIndex, 0);
+
+    const valueText = new BABYLON.GUI.TextBlock();
+    valueText.text = value;
+    valueText.color = "white";
+    valueText.fontSize = 15;
+    valueText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    valueText.paddingTop = "10px";
+    grid.addControl(valueText, rowIndex, 1);
+
+    grid.addRowDefinition(0.05);
 }

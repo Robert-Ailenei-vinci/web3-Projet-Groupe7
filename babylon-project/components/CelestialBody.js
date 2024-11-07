@@ -1,5 +1,5 @@
 import planetDataRetrieval from './api/planetDataRetrieval.js';
-import { uiPlanetDetails } from './uiPlanetDetails/uiPlanetDetails.js';
+import { uiPlanetDetails, addRow } from './uiPlanetDetails/uiPlanetDetails.js';
 
 class CelestialBody {
     constructor(name, radius, position, texture, scene) {
@@ -46,49 +46,37 @@ class CelestialBody {
         // Register an action for handling left-click on the mesh
         this.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, async () => {
             this.handleInteraction();
-            // Create the UI and get the text block
-            const textBlock = uiPlanetDetails();
+            const grid = uiPlanetDetails();
 
-            // Fetch additional planet details when the mesh is clicked
-            
-                try {
-                    const planetDetails = await planetDataRetrieval(this.name);
-                    // Update the text block with the planet details
-                    textBlock.text = `
-                    Nom: ${planetDetails.name}
-                    Nom en anglais: ${planetDetails.englishName}
-                    Est une planète: ${planetDetails.isPlanet ? 'Oui' : 'Non'}
-                    Lunes: ${planetDetails.moons ? planetDetails.moons.length : 'Aucune'}
-                    Aphélie: ${planetDetails.aphelion} km
-                    Périhélie: ${planetDetails.perihelion} km
-                    Demi-grand axe: ${planetDetails.semimajorAxis} km
-                    Excentricité: ${planetDetails.eccentricity}
-                    Inclinaison: ${planetDetails.inclination}°
-                    Masse: ${planetDetails.mass.massValue} x 10^${planetDetails.mass.massExponent} kg
-                    Volume: ${planetDetails.vol.volValue} x 10^${planetDetails.vol.volExponent} km³
-                    Densité: ${planetDetails.density} g/cm³
-                    Gravité: ${planetDetails.gravity} m/s²
-                    Vitesse d'échappement: ${planetDetails.escape} m/s
-                    Rayon moyen: ${planetDetails.meanRadius} km
-                    Rayon équatorial: ${planetDetails.equaRadius} km
-                    Rayon polaire: ${planetDetails.polarRadius} km
-                    Aplatissement: ${planetDetails.flattening}
-                    Inclinaison axiale: ${planetDetails.axialTilt}°
-                    Température moyenne: ${planetDetails.avgTemp} K
-                    Orbite sidérale: ${planetDetails.sideralOrbit} jours
-                    Rotation sidérale: ${planetDetails.sideralRotation} heures
-                `;
-
-                } catch (error) {
-                    console.error('Error fetching planet details:', error);
-                }
-    
-
-
+            try {
+                const planetDetails = await planetDataRetrieval(this.name);
+                addRow(grid, '', ''); //placeholder for the first row of the table, DO NOT DELETE
+                addRow(grid, "Nom:", planetDetails.name);
+                addRow(grid, "Nom en anglais:", planetDetails.englishName);
+                addRow(grid, "Est une planète:", planetDetails.isPlanet ? 'Oui' : 'Non');
+                addRow(grid, "Lunes:", planetDetails.moons ? planetDetails.moons.length : 'Aucune');
+                addRow(grid, "Aphélie:", `${planetDetails.aphelion} km`);
+                addRow(grid, "Périhélie:", `${planetDetails.perihelion} km`);
+                addRow(grid, "Demi-grand axe:", `${planetDetails.semimajorAxis} km`);
+                addRow(grid, "Excentricité:", planetDetails.eccentricity);
+                addRow(grid, "Inclinaison:", `${planetDetails.inclination}°`);
+                addRow(grid, "Masse:", `${planetDetails.mass.massValue} x 10^${planetDetails.mass.massExponent} kg`);
+                addRow(grid, "Volume:", `${planetDetails.vol.volValue} x 10^${planetDetails.vol.volExponent} km³`);
+                addRow(grid, "Densité:", `${planetDetails.density} g/cm³`);
+                addRow(grid, "Gravité:", `${planetDetails.gravity} m/s²`);
+                addRow(grid, "Vitesse d'échappement:", `${planetDetails.escape} m/s`);
+                addRow(grid, "Rayon moyen:", `${planetDetails.meanRadius} km`);
+                addRow(grid, "Rayon équatorial:", `${planetDetails.equaRadius} km`);
+                addRow(grid, "Rayon polaire:", `${planetDetails.polarRadius} km`);
+                addRow(grid, "Aplatissement:", planetDetails.flattening);
+                addRow(grid, "Inclinaison axiale:", `${planetDetails.axialTilt}°`);
+                addRow(grid, "Température moyenne:", `${planetDetails.avgTemp} K`);
+                addRow(grid, "Orbite sidérale:", `${planetDetails.sideralOrbit} jours`);
+                addRow(grid, "Rotation sidérale:", `${planetDetails.sideralRotation} heures`);
+            } catch (error) {
+                console.error('Error fetching planet details:', error);
+            }
         }));
-
-
-
         // Update label visibility on each render
         scene.onBeforeRenderObservable.add(() => this.updateLabelVisibility());
     }
