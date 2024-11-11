@@ -20,7 +20,23 @@ class CelestialBody {
         // Apply the material
         const material = new BABYLON.StandardMaterial(`${name}Material`, scene);
         material.diffuseTexture = new BABYLON.Texture(texture, scene);
+        
+        if (name.toLowerCase() === "soleil") {
+            material.emissiveColor = new BABYLON.Color3(1, 0.5, 0); // Couleur émissive orange
+
+// Create a glow layer for the halo effect
+        const glowLayer = new BABYLON.GlowLayer("glow", scene);
+        new BABYLON.GlowLayer("glow", scene, { 
+            mainTextureFixedSize: 256,
+            blurKernelSize: 64
+        });
+        glowLayer.intensity=10;
+        }
+        
+        
         this.mesh.material = material;
+     
+        
 
         // Define a fixed camera offset position (adjusted for a good view)
         const cameraOffset = new BABYLON.Vector3(radius * 3, radius * 1.5, radius * 2);  // Adjust as needed

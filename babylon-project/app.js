@@ -19,7 +19,24 @@ const createScene = () => {
         scene.activeCamera = mainCamera; // Revenir à la caméra principale
     });
 
+
+
+
     
+    // Ajouter une lumière point pour simuler le soleil
+    const sunPointLight = new BABYLON.PointLight("sunPointLight", new BABYLON.Vector3(0, 0, 0), scene);
+    sunPointLight.diffuse = new BABYLON.Color3(1, 0.5, 0); // Orange
+    sunPointLight.specular = new BABYLON.Color3(1, 1, 0.5); // Jaune-rougeâtre
+    sunPointLight.intensity = 30; // Augmenter l'intensité de la lumière
+
+ // Ajouter une lumière hémisphérique pour l'éclairage ambiant
+ //c est pour la patie de la planete qui n est pas illuminee directement par le soleil.
+    const ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 1, 0), scene);
+    ambientLight.diffuse = new BABYLON.Color3(0.2, 0.2, 0.2); // Couleur diffuse de la lumière ambiante
+    ambientLight.specular = new BABYLON.Color3(0, 0, 0); // Couleur spéculaire de la lumière ambiante
+    ambientLight.groundColor = new BABYLON.Color3(0, 0, 0); // Couleur du sol de la lumière ambiante
+
+
 
     // Fonction pour créer un système de particules pour les étoiles
     const createStarParticleSystem = (color) => {
@@ -55,7 +72,7 @@ const createScene = () => {
 
         // Définir la fonction de positionnement des particules
         starParticleSystem.startPositionFunction = function(worldMatrix, positionToUpdate) {
-            const position = randomPositionInHollowSphere(800, 2000); // Distance minimale et maximale des étoiles
+            const position = randomPositionInHollowSphere(1400, 2600); // Distance minimale et maximale des étoiles
             BABYLON.Vector3.TransformCoordinatesToRef(position, worldMatrix, positionToUpdate);
         };
 

@@ -6,7 +6,7 @@ export const createShootingStar = (scene, startPosition, endPosition, color) => 
     const trailMaterial = new BABYLON.StandardMaterial("trailMaterial", scene);
     trailMaterial.emissiveColor = color;
     
-    // Attendre 1 seconde avant de créer la traînée
+    // Attendre 5 seconde avant de créer la traînée
     setTimeout(() => {
         trail.material = trailMaterial;
     }, 5000);
