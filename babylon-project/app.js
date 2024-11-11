@@ -39,59 +39,65 @@ const createScene = () => {
 
 
     // Fonction pour créer un système de particules pour les étoiles
-    const createStarParticleSystem = (color) => {
-        const starParticleSystem = new BABYLON.ParticleSystem("stars", 10000, scene);
+    const createStarParticleSystem = (color, number, type) => {
+        const starParticleSystem = new BABYLON.ParticleSystem("stars", number, scene);
         starParticleSystem.particleTexture = new BABYLON.Texture("../skybox/blanc.png", scene); // Assurez-vous d'avoir une texture d'étoile
-
+    
         // Configurer les particules
         starParticleSystem.color1 = color; // Couleur des particules
         starParticleSystem.color2 = color; // Couleur des particules
         starParticleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0); // Couleur des particules mortes
-
+    
         starParticleSystem.minSize = 0.5; // Taille minimale des particules
         starParticleSystem.maxSize = 3; // Taille maximale des particules
-
+    
         starParticleSystem.minLifeTime = Number.MAX_VALUE; // Durée de vie minimale des particules (infinie)
         starParticleSystem.maxLifeTime = Number.MAX_VALUE; // Durée de vie maximale des particules (infinie)
-
+    
         starParticleSystem.emitRate = 10; // Taux d'émission des particules
-
+    
         starParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD; // Mode de mélange des particules pour augmenter la luminosité
-
+    
         starParticleSystem.gravity = new BABYLON.Vector3(0, 0, 0); // Gravité appliquée aux particules
-
+    
         starParticleSystem.direction1 = new BABYLON.Vector3(0, 0, 0); // Direction des particules
         starParticleSystem.direction2 = new BABYLON.Vector3(0, 0, 0); // Direction des particules
-
+    
         starParticleSystem.minAngularSpeed = 0; // Vitesse angulaire minimale des particules
         starParticleSystem.maxAngularSpeed = Math.PI; // Vitesse angulaire maximale des particules
-
+    
         starParticleSystem.minEmitPower = 0.5; // Puissance d'émission minimale des particules
         starParticleSystem.maxEmitPower = 100; // Puissance d'émission maximale des particules
         starParticleSystem.updateSpeed = 0.01; // Vitesse de mise à jour du système de particules
-
+    
         // Définir la fonction de positionnement des particules
         starParticleSystem.startPositionFunction = function(worldMatrix, positionToUpdate) {
             const position = randomPositionInHollowSphere(1400, 2600); // Distance minimale et maximale des étoiles
             BABYLON.Vector3.TransformCoordinatesToRef(position, worldMatrix, positionToUpdate);
         };
-
+    
         // Démarrer le système de particules
         starParticleSystem.start();
-
+    
         // Émettre toutes les particules manuellement
         starParticleSystem.manualEmitCount = starParticleSystem.getCapacity();
-
+    
         // Désactiver l'émission continue
         starParticleSystem.emitRate = 0;
-
+    
+        // Ajouter une glow layer pour les étoiles de type "aura"
+        if (type === "aura") {
+            const glowLayer = new BABYLON.GlowLayer("glow", scene);
+            glowLayer.intensity = 0.5; // Ajuster l'intensité de la glow layer
+        }
+    
         return starParticleSystem;
     };
-
+    
     // Créer des systèmes de particules pour les étoiles de différentes couleurs
-    createStarParticleSystem(new BABYLON.Color4(1, 1, 1, 1)); // Étoiles blanches
-    createStarParticleSystem(new BABYLON.Color4(1, 1, 0, 1)); // Étoiles jaunes
-    //createStarParticleSystem(new BABYLON.Color4(0, 1, 1, 1)); // Étoiles cyan
+    createStarParticleSystem(new BABYLON.Color4(1, 1, 1, 1), 6000, "normale"); // Étoiles blanches
+    createStarParticleSystem(new BABYLON.Color4(1, 1, 0, 1), 1000, "aura"); // Étoiles jaunes avec glow layer
+    createStarParticleSystem(new BABYLON.Color4(1, 0.5, 0, 1), 500 , "aura"); // Étoiles cyan
     // Créer des étoiles filantes périodiquement
     const createRandomShootingStar = () => {
     const startPosition = randomPositionInHollowSphere(800, 2000);
