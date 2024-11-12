@@ -18,6 +18,8 @@ export function uiPlanetDetails() {
     grid.height = "650px"; //put this back to 100% if you wish for the full lenght
     rect.addControl(grid);
 
+    grid.rect = rect;
+    
     return grid;
 }
 

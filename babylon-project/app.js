@@ -17,6 +17,7 @@ const createScene = () => {
     const returnButton = document.getElementById('returnButton');
     returnButton.addEventListener('click', () => {
         scene.activeCamera = mainCamera; // Revenir à la caméra principale
+        
     });
 
 
