@@ -142,14 +142,22 @@ const loadCelestialBodies = async (scene) => {
     // Itérer à travers chaque planète et créer un CelestialBody
     data.planets.forEach(planet => {
         const position = new BABYLON.Vector3(planet.distanceFromSun * 10, 0, 0); // Ajuster l'échelle
-        const celestialBody = new CelestialBody(planet.name, planet.radius, position, planet.texture, scene);
+        const celestialBody = new CelestialBody(
+            planet.name,
+            planet.radius,
+            planet.distanceFromSun * 10,
+            planet.texture,
+            scene,
+            planet.orbitalPeriod
+            
+        );
         celestialBodies.push(celestialBody);
     });
 
     // Ajouter le Soleil comme un corps céleste
     data.astralBodies.forEach(sun => {
         const position = new BABYLON.Vector3(sun.distanceFromSun, 0, 0); // Position du soleil
-        const celestialBody = new CelestialBody(sun.name, sun.radius, position, sun.texture, scene);
+        const celestialBody = new CelestialBody(sun.name, sun.radius, sun.distanceFromSun, sun.texture, scene);
         celestialBodies.push(celestialBody);
     });
 
