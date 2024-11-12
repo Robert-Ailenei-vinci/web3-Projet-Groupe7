@@ -26,9 +26,12 @@ class CelestialBody {
         material.diffuseTexture = new BABYLON.Texture(texture, scene);
 
         if (name.toLowerCase() !== "soleil") {
-        // Créer l'animation de l'orbite
-        this.createOrbitAnimation();
+            // Définir la couleur spéculaire sur noir pour un matériau mat
+            material.specularColor = new BABYLON.Color3(0, 0, 0);
+            // Créer l'animation de l'orbite
+            this.createOrbitAnimation();
         }
+
 
         
         if (name.toLowerCase() === "soleil") {
