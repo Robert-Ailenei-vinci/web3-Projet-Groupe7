@@ -4,13 +4,16 @@ import { uiPlanetDetails, addRow } from './uiPlanetDetails/uiPlanetDetails.js';
 class CelestialBody {
     static selectedPlanet = null; // Propriété statique pour la planète actuellement sélectionnée
     
-    constructor(name, radius, position, texture, scene) {
+    constructor(name, radius, position, texture, scene, orbitalPeriod, distanceFromSun) {
         this.name = name;
         this.radius = radius;
         this.position = position;
         this.texture = texture;
         this.scene = scene;
         this.isDetailsVisible = false; // Détails non affichés par défaut
+        this.orbitalPeriod = orbitalPeriod;
+        this.distanceFromSun = distanceFromSun;
+
 
         // Define the min and max zoom limits
         this.minZoom = radius * 3.5;  // Minimum zoom in
@@ -58,6 +61,9 @@ class CelestialBody {
 
         // Create the label for the celestial body
         this.createLabel();
+
+        this.createOrbit();
+
 
         // Enable interaction with the celestial body's mesh
         this.mesh.actionManager = new BABYLON.ActionManager(scene);
@@ -111,6 +117,25 @@ class CelestialBody {
         // Stocker les références pour pouvoir ajuster la visibilité
         this.labelCircle = circle;
     }
+
+    createOrbit() {
+        // Créer une orbite circulaire (torus)
+        const orbitPath = BABYLON.MeshBuilder.CreateTorus("orbit", {
+            diameter: this.distanceFromSun * 2,  // Diamètre basé sur la distance du Soleil
+            thickness: 0.01,  // Épaisseur de l'orbite
+            tessellation: 100  // Nombre de segments pour la courbure
+        }, this.scene);
+    
+        orbitPath.position = new BABYLON.Vector3(0, 0, 0);  // Placer l'orbite au centre (Soleil)
+    
+        const orbitMaterial = new BABYLON.StandardMaterial("orbitMaterial", this.scene);
+        orbitMaterial.wireframe = true; 
+        orbitMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+        orbitPath.material = orbitMaterial;
+    
+        this.orbitPath = orbitPath;  // Référence à l'orbite
+    }
+    
 
     // Méthode pour gérer l'interaction Lors du clic sur un astre ou son label
     async handleInteraction() {
