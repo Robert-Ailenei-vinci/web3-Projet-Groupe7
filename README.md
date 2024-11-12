@@ -28,6 +28,21 @@ Ce projet est une simulation interactive du système solaire utilisant Babylon.j
     Lancez Visual Studio Code et ouvrez le dossier contenant le projet.
 
 3. **Installez l'extension Live Server**
-    Si vous ne l'avez pas déjà, installez l'extension Live Server pour Visual Studio Code. Elle permet de lancer le projet sur un serveur local pour un rendu correct des fichiers HTML et JavaScript.
+    Si vous ne l'avez pas déjà, installez l'extension **Live Server** pour Visual Studio Code. Elle permet de lancer le projet sur un serveur local pour un rendu correct des fichiers HTML et JavaScript.
 
+### Pour installer Live Server :
+
+1. Allez dans la section **Extensions** de Visual Studio Code.
+2. Recherchez "Live Server".
+3. Installez l'extension de **Ritwick Dey**.
+
+### Lancez le projet avec Live Server
+
+1. Cliquez avec le bouton droit sur le fichier `index.html` dans l'explorateur de fichiers.
+2. Sélectionnez **Open with Live Server**.
+3. Votre navigateur par défaut s'ouvrira et affichera le projet en cours d'exécution sur un serveur local.
+
+### Utilisez le projet
+
+Une fois lancé, vous pouvez interagir avec le système solaire, sélectionner des planètes, et afficher leurs détails. Le menu discret en bas à droite indique la source des données de l'API.
 
