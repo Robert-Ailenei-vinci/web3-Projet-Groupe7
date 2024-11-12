@@ -257,7 +257,7 @@ class CelestialBody {
         // Créez une ligne pour l'orbite
         this.orbitLine = BABYLON.MeshBuilder.CreateLines(`${this.name}OrbitLine`, { points: orbitPath }, this.scene);
         this.orbitLine.color = new BABYLON.Color3(1, 1, 1); // Couleur blanche pour la ligne d'orbite
-        this.orbitLine.alpha = 0.1
+        this.orbitLine.alpha = 0.4
 
     }
 
