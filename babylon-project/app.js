@@ -50,7 +50,7 @@ const createScene = () => {
         starParticleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0); // Couleur des particules mortes
     
         starParticleSystem.minSize = 0.5; // Taille minimale des particules
-        starParticleSystem.maxSize = 3; // Taille maximale des particules
+        starParticleSystem.maxSize = 5; // Taille maximale des particules
     
         starParticleSystem.minLifeTime = Number.MAX_VALUE; // Durée de vie minimale des particules (infinie)
         starParticleSystem.maxLifeTime = Number.MAX_VALUE; // Durée de vie maximale des particules (infinie)
@@ -73,7 +73,7 @@ const createScene = () => {
     
         // Définir la fonction de positionnement des particules
         starParticleSystem.startPositionFunction = function(worldMatrix, positionToUpdate) {
-            const position = randomPositionInHollowSphere(1400, 2600); // Distance minimale et maximale des étoiles
+            const position = randomPositionInHollowSphere(6000, 9000); // Distance minimale et maximale des étoiles
             BABYLON.Vector3.TransformCoordinatesToRef(position, worldMatrix, positionToUpdate);
         };
     
