@@ -121,8 +121,8 @@ class CelestialBody {
     createOrbit() {
         // Créer une orbite circulaire (torus)
         const orbitPath = BABYLON.MeshBuilder.CreateTorus("orbit", {
-            diameter: this.distanceFromSun * 2,  // Diamètre basé sur la distance du Soleil
-            thickness: 0.01,  // Épaisseur de l'orbite
+            diameter: this.distanceFromSun * 2 * 5,  // Diamètre basé sur la distance du Soleil
+            thickness: 0.005,  // Réduire l'épaisseur de l'orbite
             tessellation: 100  // Nombre de segments pour la courbure
         }, this.scene);
     
@@ -218,33 +218,30 @@ class CelestialBody {
     updateLabelVisibility() {
         const camera = this.scene.activeCamera;
         const distance = BABYLON.Vector3.Distance(camera.position, this.mesh.position);
-
+    
         // Ajuste l'opacité du label en fonction de la distance (seuil = radius * 5 par exemple)
         if (distance < this.radius * 5) {
             this.labelCircle.alpha = 0; // Rendre l'étiquette invisible quand proche
             // this.labelLine.alpha = 0; // Rendre l'étiquette invisible quand proche
-            return;
         } else {
             this.labelCircle.alpha = 1; // Rendre l'étiquette visible quand éloigné
-            //this.labelLine.alpha = 1; // Rendre l'étiquette visible quand éloigné
+            // this.labelLine.alpha = 1; // Rendre l'étiquette visible quand éloigné
         }
-
+    
         // Créer un rayon partant de la caméra vers le label
         const direction = this.mesh.position.subtract(camera.position).normalize();
         const ray = new BABYLON.Ray(camera.position, direction, distance);
-
+    
         // Utiliser le raycast pour vérifier les collisions
         const hit = this.scene.pickWithRay(ray, (mesh) => mesh !== this.mesh);
-
-        // Rendre l'étiquette invisible si un autre corps céleste bloque la vue
-        if (hit.hit) {
-            this.labelCircle.alpha = 0; // Rendre l'étiquette invisible quand proche
-            //this.labelLine.alpha = 0;
-        } else {
-            this.labelCircle.alpha = 1; // Rendre l'étiquette visible quand éloigné
-            //this.labelLine.alpha = 1;
-        }
+    
+        // Toujours garder le label visible, même en cas de collision
+        this.labelCircle.alpha = 1; // Assure que le label reste visible
+    
+        // Les orbites ne sont jamais cachées, donc on n'intervient pas dessus ici
     }
+    
+    
 
     // Méthode pour gérer le zoom avec la molette de la souris
     handleZoom(event) {

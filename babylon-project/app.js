@@ -141,7 +141,7 @@ const loadCelestialBodies = async (scene) => {
 
     // Itérer à travers chaque planète et créer un CelestialBody
     data.planets.forEach(planet => {
-        const position = new BABYLON.Vector3(planet.distanceFromSun, 0, 0); // Ajuster l'échelle
+        const position = new BABYLON.Vector3(planet.distanceFromSun * 5, 0, 0); // Ajuster l'échelle
         const celestialBody = new CelestialBody(planet.name, planet.radius, position, planet.texture, scene, planet.orbitalPeriod, planet.distanceFromSun);
         celestialBodies.push(celestialBody);
     });
