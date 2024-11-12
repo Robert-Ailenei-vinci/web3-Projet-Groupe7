@@ -26,8 +26,8 @@ const createScene = () => {
     
     // Ajouter une lumière point pour simuler le soleil
     const sunPointLight = new BABYLON.PointLight("sunPointLight", new BABYLON.Vector3(0, 0, 0), scene);
-    sunPointLight.diffuse = new BABYLON.Color3(1, 0.5, 0); // Orange
-    sunPointLight.specular = new BABYLON.Color3(1, 1, 0.5); // Jaune-rougeâtre
+    sunPointLight.diffuse = new BABYLON.Color3(1, 1, 0.7); // Orange
+    sunPointLight.specular = new BABYLON.Color3(1, 1, 0.8); // Jaune-rougeâtre
     sunPointLight.intensity = 1; // Augmenter l'intensité de la lumière
 
  // Ajouter une lumière hémisphérique pour l'éclairage ambiant
