@@ -10,3 +10,14 @@ html, body {
     height: 100%;
     touch-action: none;
 }
+
+#celestialMenu h3 {
+    font-size: 16px;
+    color: #FFD700;
+    text-align: center;
+}
+
+#celestialList li:hover {
+    color: #FFD700;
+    background: rgba(255, 255, 255, 0.2);
+}

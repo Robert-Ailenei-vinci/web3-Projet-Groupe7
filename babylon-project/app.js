@@ -161,6 +161,9 @@ const loadCelestialBodies = async (scene) => {
         celestialBodies.push(celestialBody);
     });
 
+    // Remplir le menu avec les astres
+    populateCelestialMenu(celestialBodies);
+
     return celestialBodies;
 };
 
@@ -179,6 +182,22 @@ loadCelestialBodies(scene).then(celestialBodies => {
         });
     });
 });
+
+function populateCelestialMenu(celestialBodies) {
+    const celestialList = document.getElementById('celestialList');
+
+    celestialBodies.forEach(body => {
+        const listItem = document.createElement('li');
+        listItem.textContent = body.name;
+        listItem.style.cursor = "pointer";
+        listItem.style.padding = "5px";
+        
+        // Ajouter un écouteur de clic qui appelle handleInteraction de l'astre correspondant
+        listItem.addEventListener('click', () => body.handleInteraction());
+
+        celestialList.appendChild(listItem);
+    });
+}
 
 // Adapter la taille du canvas lors du redimensionnement de la fenêtre
 window.addEventListener('resize', () => {
