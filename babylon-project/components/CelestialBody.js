@@ -235,8 +235,6 @@ class CelestialBody {
         // Utiliser le raycast pour vérifier les collisions
         const hit = this.scene.pickWithRay(ray, (mesh) => mesh !== this.mesh);
     
-        // Toujours garder le label visible, même en cas de collision
-        this.labelCircle.alpha = 1; // Assure que le label reste visible
     
         // Les orbites ne sont jamais cachées, donc on n'intervient pas dessus ici
     }
