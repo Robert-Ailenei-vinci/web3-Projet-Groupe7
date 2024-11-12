@@ -232,11 +232,14 @@ class CelestialBody {
 
         // Définissez les étapes de l'animation
         const frames = [];
+        const orbitPath = []; // Points pour dessiner la ligne d'orbite
         for (let i = 0; i <= 360; i += 1) {
             const radians = BABYLON.Tools.ToRadians(i);
             const x = Math.cos(radians) * this.distanceFromSun;
             const z = Math.sin(radians) * this.distanceFromSun;
             frames.push({ frame: i, value: new BABYLON.Vector3(x, 0, z) });
+            orbitPath.push(new BABYLON.Vector3(x, 0, z)); // Ajouter le point au chemin d'orbite
+
         }
 
         // Appliquez les images-clés à l'animation
@@ -247,6 +250,11 @@ class CelestialBody {
 
         // Démarrez l'animation avec une durée basée sur la période orbitale
         this.scene.beginAnimation(this.mesh, 0, 360, true, 360 / this.orbitalPeriod/30);
+
+        // Créez une ligne pour l'orbite
+        this.orbitLine = BABYLON.MeshBuilder.CreateLines(`${this.name}OrbitLine`, { points: orbitPath }, this.scene);
+        this.orbitLine.color = new BABYLON.Color3(1, 1, 1); // Couleur blanche pour la ligne d'orbite
+
     }
 
 }
