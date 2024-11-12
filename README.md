@@ -46,3 +46,22 @@ Ce projet est une simulation interactive du système solaire utilisant Babylon.j
 
 Une fois lancé, vous pouvez interagir avec le système solaire, sélectionner des planètes, et afficher leurs détails. Le menu discret en bas à droite indique la source des données de l'API.
 
+## Structure des fichiers
+
+- `index.html` : La page principale contenant la scène Babylon.js.
+  - `app.js` : Le script principal lançant les scenes et engines.
+  - `CelestialBody.js` : Définit la classe pour gérer chaque astre (planètes et Soleil).
+  - `planetDataRetrieval.js` : Contient le code pour récupérer les données de l'API.
+  - `uiPlanetDetails.js` : Gère l'interface utilisateur pour afficher les détails des planètes.
+- `assets/` : Contient les images et textures pour les planètes.
+- `style.css` : Styles de base pour le projet.
+
+## API Utilisée
+
+Les données des planètes sont fournies par **[Le Système Solaire API](https://api.le-systeme-solaire.net/rest/bodies/)**. Pour chaque astre, cette API fournit des informations détaillées telles que :
+
+- Nom de la planète
+- Masse, densité, gravité, etc.
+- Détails orbitaux (aphélie, périhélie, inclinaison)
+- Température moyenne et autres caractéristiques
+
