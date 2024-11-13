@@ -3,7 +3,8 @@ import { uiPlanetDetails, addRow } from './uiPlanetDetails/uiPlanetDetails.js';
 
 class CelestialBody {
     static selectedPlanet = null; // Propriété statique pour la planète actuellement sélectionnée
-    
+    static allPlanets = [];
+
     constructor(name, radius, distanceFromSun, texture, scene,orbitalPeriod) {
         this.name = name;
         this.radius = radius;
@@ -12,6 +13,8 @@ class CelestialBody {
         this.scene = scene;
         this.isDetailsVisible = false; // Détails non affichés par défaut
         this.orbitalPeriod = orbitalPeriod;
+
+        CelestialBody.allPlanets.push(this);
 
         // Define the min and max zoom limits
         this.minZoom = radius * 3.5;  // Minimum zoom in
@@ -223,6 +226,10 @@ class CelestialBody {
         }
     }
 
+    static get speedMultiplier() {
+        return document.getElementById("mySlider").value;
+    }
+
     createOrbitAnimation() {
         // Créez une animation de position pour simuler une orbite circulaire
         const orbitAnimation = new BABYLON.Animation(
@@ -242,7 +249,6 @@ class CelestialBody {
             const z = Math.sin(radians) * this.distanceFromSun;
             frames.push({ frame: i, value: new BABYLON.Vector3(x, 0, z) });
             orbitPath.push(new BABYLON.Vector3(x, 0, z)); // Ajouter le point au chemin d'orbite
-
         }
 
         // Appliquez les images-clés à l'animation
@@ -252,13 +258,24 @@ class CelestialBody {
         this.mesh.animations.push(orbitAnimation);
 
         // Démarrez l'animation avec une durée basée sur la période orbitale
-        this.scene.beginAnimation(this.mesh, 0, 360, true, 360 / this.orbitalPeriod/30);
+        this.scene.beginAnimation(this.mesh, 0, 360, true, (360 / this.orbitalPeriod / 30) * CelestialBody.speedMultiplier);
 
         // Créez une ligne pour l'orbite
         this.orbitLine = BABYLON.MeshBuilder.CreateLines(`${this.name}OrbitLine`, { points: orbitPath }, this.scene);
         this.orbitLine.color = new BABYLON.Color3(1, 1, 1); // Couleur blanche pour la ligne d'orbite
-        this.orbitLine.alpha = 0.4
+        this.orbitLine.alpha = 0.4;
+    }
 
+    updateOrbitAnimationSpeed() {
+        // Update the speed of the existing animation
+        const animation = this.mesh.animations.find(anim => anim.name === `${this.name}OrbitAnimation`);
+        if (animation) {
+            this.scene.beginAnimation(this.mesh, 0, 360, true, (360 / this.orbitalPeriod / 30) * CelestialBody.speedMultiplier);
+        }
+    }
+
+    static updateAllAnimationsSpeed() {
+        CelestialBody.allPlanets.forEach(planet => planet.updateOrbitAnimationSpeed());
     }
 
 }
