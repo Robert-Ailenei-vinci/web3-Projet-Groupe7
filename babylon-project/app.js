@@ -203,3 +203,17 @@ function populateCelestialMenu(celestialBodies) {
 window.addEventListener('resize', () => {
     engine.resize();
 });
+
+const slider = document.getElementById("mySlider");
+const outputSlider = document.getElementById("outputSlider");
+
+outputSlider.innerHTML =`Vitesse: x${slider.value}`;
+
+slider.oninput = function() {
+    outputSlider.innerHTML = `Vitesse: x${slider.value}`;
+    
+    // Restart the animation for all planets with the new speed after a timeout
+    setTimeout(()=>{
+        CelestialBody.updateAllAnimationsSpeed();
+    }, 500)
+}
