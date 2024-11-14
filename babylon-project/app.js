@@ -42,7 +42,7 @@ const createScene = () => {
     // Fonction pour créer un système de particules pour les étoiles
     const createStarParticleSystem = (color, number, type) => {
         const starParticleSystem = new BABYLON.ParticleSystem("stars", number, scene);
-        starParticleSystem.particleTexture = new BABYLON.Texture("../skybox/blanc.png", scene); // Assurez-vous d'avoir une texture d'étoile
+        starParticleSystem.particleTexture = new BABYLON.Texture("./skybox/blanc.png", scene); // Assurez-vous d'avoir une texture d'étoile
     
         // Configurer les particules
         starParticleSystem.color1 = color; // Couleur des particules
