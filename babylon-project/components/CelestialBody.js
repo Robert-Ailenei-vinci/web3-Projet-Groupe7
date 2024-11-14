@@ -279,8 +279,5 @@ class CelestialBody {
     }
 
 }
-
-
-
 // Exporter la classe pour l'utiliser dans d'autres fichiers
 export default CelestialBody;
