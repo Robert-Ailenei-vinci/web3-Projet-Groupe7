@@ -175,11 +175,14 @@ loadCelestialBodies(scene).then(celestialBodies => {
     // Lancer la boucle de rendu
     engine.runRenderLoop(() => {
         scene.render();
-
+        CelestialBody.updateCameraTarget();
         // Faire tourner chaque corps céleste
         celestialBodies.forEach(body => {
-            body.rotate(0.01); // Ajuster la vitesse de rotation ici
+            body.updateOrbit(); // Ajuster la vitesse de rotation ici
         });
+        if (CelestialBody.selectedPlanet) {
+            scene.activeCamera.target = CelestialBody.selectedPlanet.mesh.position;
+        }
     });
 });
 
@@ -207,13 +210,19 @@ window.addEventListener('resize', () => {
 const slider = document.getElementById("mySlider");
 const outputSlider = document.getElementById("outputSlider");
 
-outputSlider.innerHTML =`Vitesse: x${slider.value}`;
+outputSlider.innerHTML = `Vitesse: x${slider.value}`;
 
 slider.oninput = function() {
     outputSlider.innerHTML = `Vitesse: x${slider.value}`;
     
-    // Restart the animation for all planets with the new speed after a timeout
-    setTimeout(()=>{
-        CelestialBody.updateAllAnimationsSpeed();
-    }, 500)
+    // Update the rotation speed for all planets
+    CelestialBody.updateAllAnimationsSpeed(parseFloat(slider.value));
+    
+    // Ensure the camera follows the selected planet
+    if (CelestialBody.selectedPlanet) {
+        scene.activeCamera.target = CelestialBody.selectedPlanet.mesh.position;
+    }
 }
+document.getElementById("mySlider").addEventListener("input", () => {
+    CelestialBody.updateAllAnimationsSpeed();
+});

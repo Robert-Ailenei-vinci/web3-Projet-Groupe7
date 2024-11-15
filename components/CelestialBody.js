@@ -13,6 +13,9 @@ class CelestialBody {
         this.scene = scene;
         this.isDetailsVisible = false; // Détails non affichés par défaut
         this.orbitalPeriod = orbitalPeriod;
+        this.orbitalSpeed = 0.1;
+        this.angle = 0; // Vitesse de rotation par défaut
+        this.lastPosition = new BABYLON.Vector3(distanceFromSun, 0, 0); // Ajouter une propriété pour stocker la dernière position
 
         CelestialBody.allPlanets.push(this);
 
@@ -70,7 +73,22 @@ class CelestialBody {
         }));
         // Update label visibility on each render
     }
-
+    updateOrbit() {
+        this.angle += this.orbitalSpeed;
+        this.mesh.position.x = this.distanceFromSun * Math.cos(this.angle);
+        this.mesh.position.z = this.distanceFromSun * Math.sin(this.angle);
+    }
+    static updateCameraTarget() {
+        if (CelestialBody.selectedPlanet) {
+            const selectedPlanet = CelestialBody.selectedPlanet;
+            selectedPlanet.scene.activeCamera.target = selectedPlanet.mesh.position;
+        }
+    }
+    static updateAllOrbitalSpeeds(newSpeed) {
+        CelestialBody.allPlanets.forEach(planet => {
+            planet.orbitalSpeed = newSpeed;
+        });
+    }
 
     rotate(speed) {
         this.mesh.rotation.y += speed;
@@ -133,11 +151,32 @@ class CelestialBody {
                 BABYLON.Tools.ToRadians(90), // angle horizontal de départ
                 BABYLON.Tools.ToRadians(75), // angle vertical de départ
                 this.radius * 10, // distance initiale de la caméra
-                this.mesh.position, // point de focalisation (centre de la planète)
+                this.mesh.position.clone(), // point de focalisation (centre de la planète)
                 this.scene
             );
-            this.orbitCamera.lowerRadiusLimit = this.radius * 2; // Zoom minimum
-            this.orbitCamera.upperRadiusLimit = this.radius * 20; // Zoom maximum
+            // Configuration des limites de la caméra
+            this.orbitCamera.lowerRadiusLimit = this.radius * 2;
+            this.orbitCamera.upperRadiusLimit = this.radius * 20;
+            this.orbitCamera.angularSensibilityX = 1000; // Réduire la sensibilité de rotation
+            this.orbitCamera.angularSensibilityY = 1000;
+            this.orbitCamera.wheelPrecision = 50; // Ajuster la précision de la molette
+        
+            this.scene.onBeforeRenderObservable.add(() => {
+                if (this.scene.activeCamera === this.orbitCamera) {
+                    // Mettre à jour la position cible de la caméra en douceur
+                    const targetPosition = this.mesh.position;
+                    const smoothFactor = 0.1; // Facteur de lissage (ajuster selon les besoins)
+                    
+                    this.orbitCamera.target = BABYLON.Vector3.Lerp(
+                        this.orbitCamera.target,
+                        targetPosition,
+                        smoothFactor
+                    );
+                }
+            });
+        } else {
+            // Mettre à jour la position cible si la caméra existe déjà
+            this.orbitCamera.target = this.mesh.position.clone();
         }
 
         // Basculer vers la caméra d'orbite
@@ -229,7 +268,11 @@ class CelestialBody {
     static get speedMultiplier() {
         return document.getElementById("mySlider").value;
     }
-
+    static updateAllAnimationsSpeed(newSpeed) {
+        CelestialBody.allPlanets.forEach(planet => {
+            planet.rotationSpeed = newSpeed;
+        });
+    }
     createOrbitAnimation() {
         // Créez une animation de position pour simuler une orbite circulaire
         const orbitAnimation = new BABYLON.Animation(
@@ -267,15 +310,26 @@ class CelestialBody {
     }
 
     updateOrbitAnimationSpeed() {
-        // Update the speed of the existing animation
-        const animation = this.mesh.animations.find(anim => anim.name === `${this.name}OrbitAnimation`);
-        if (animation) {
-            this.scene.beginAnimation(this.mesh, 0, 360, true, (360 / this.orbitalPeriod / 30) * CelestialBody.speedMultiplier);
+        // Find the existing animation
+        const animatable = this.scene.getAnimatableByTarget(this.mesh);
+        if (animatable) {
+            // Update the speed ratio of the animation
+            animatable.speedRatio = (360 / this.orbitalPeriod / 30) * CelestialBody.speedMultiplier;
         }
     }
-
-    static updateAllAnimationsSpeed() {
-        CelestialBody.allPlanets.forEach(planet => planet.updateOrbitAnimationSpeed());
+    
+    static updateAllAnimationsSpeed(newSpeed) {
+        CelestialBody.allPlanets.forEach(planet => {
+            if (planet.name.toLowerCase() !== "soleil") {
+                planet.orbitalSpeed = newSpeed;
+                planet.updateOrbitAnimationSpeed();
+            }
+        });
+        CelestialBody.updateCameraTarget();
+    }
+    
+    static get speedMultiplier() {
+        return parseFloat(document.getElementById("mySlider").value);
     }
 
 }
