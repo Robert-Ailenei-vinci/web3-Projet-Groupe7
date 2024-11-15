@@ -49,8 +49,8 @@ const createScene = () => {
         starParticleSystem.color2 = color; // Couleur des particules
         starParticleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0); // Couleur des particules mortes
     
-        starParticleSystem.minSize = 0.5; // Taille minimale des particules
-        starParticleSystem.maxSize = 5; // Taille maximale des particules
+        starParticleSystem.minSize = 7; // Taille minimale des particules
+        starParticleSystem.maxSize = 8; // Taille maximale des particules
     
         starParticleSystem.minLifeTime = Number.MAX_VALUE; // Durée de vie minimale des particules (infinie)
         starParticleSystem.maxLifeTime = Number.MAX_VALUE; // Durée de vie maximale des particules (infinie)
@@ -96,7 +96,7 @@ const createScene = () => {
     };
     
     // Créer des systèmes de particules pour les étoiles de différentes couleurs
-    createStarParticleSystem(new BABYLON.Color4(1, 1, 1, 1), 6000, "normale"); // Étoiles blanches
+    createStarParticleSystem(new BABYLON.Color4(1, 1, 1, 1), 18000, "normale"); // Étoiles blanches
     createStarParticleSystem(new BABYLON.Color4(1, 1, 0, 1), 1000, "aura"); // Étoiles jaunes avec glow layer
     createStarParticleSystem(new BABYLON.Color4(1, 0.5, 0, 1), 500 , "aura"); // Étoiles cyan
     // Créer des étoiles filantes périodiquement
