@@ -19,9 +19,7 @@ class CelestialBody {
 
         CelestialBody.allPlanets.push(this);
 
-        // Define the min and max zoom limits
-        this.minZoom = radius * 3.5;  // Minimum zoom in
-        this.maxZoom = radius * 120;  // Maximum zoom out
+       
 
         // Create the mesh for the celestial body
         this.mesh = BABYLON.MeshBuilder.CreateSphere(name, { diameter: radius, segments: 16 }, scene);
@@ -56,11 +54,6 @@ class CelestialBody {
         this.mesh.material = material;
      
         
-
-       
-        // Set up an event listener to handle zooming
-        scene.getEngine().getRenderingCanvas().addEventListener('wheel', (event) => this.handleZoom(event));
-
         // Create the label for the celestial body
         this.createLabel();
 
@@ -244,26 +237,7 @@ class CelestialBody {
         }
     }
     
-       // Met à jour la visibilité du label en fonction de la distance de la caméra et des obstructions
 
-
-
-
-
-    // Méthode pour gérer le zoom avec la molette de la souris
-    handleZoom(event) {
-        const zoomFactor = 1.1; // Facteur de zoom de 10%
-
-        if (this.scene.activeCamera === this.camera) {
-            if (event.deltaY < 0) {
-                // Zoom avant (molette vers le haut) - réduire le rayon
-                this.camera.radius = Math.max(this.minZoom, this.camera.radius / zoomFactor);
-            } else {
-                // Zoom arrière (molette vers le bas) - augmenter le rayon
-                this.camera.radius = Math.min(this.camera.radius * zoomFactor);
-            }
-        }
-    }
 
     static get speedMultiplier() {
         return document.getElementById("mySlider").value;
