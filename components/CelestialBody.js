@@ -5,7 +5,7 @@ class CelestialBody {
     static selectedPlanet = null; // Propriété statique pour la planète actuellement sélectionnée
     static allPlanets = [];
 
-    constructor(name, radius, distanceFromSun, texture, scene,orbitalPeriod) {
+    constructor(name, radius, distanceFromSun, texture, scene,orbitalPeriod,rotationPeriod) {
         this.name = name;
         this.radius = radius;
         this.distanceFromSun = distanceFromSun;
@@ -15,6 +15,7 @@ class CelestialBody {
         this.orbitalPeriod = orbitalPeriod;
         this.orbitalSpeed = 0.1;
         this.angle = 0; // Vitesse de rotation par défaut
+        this.rotationPeriod = rotationPeriod * 0.01;
         this.lastPosition = new BABYLON.Vector3(distanceFromSun, 0, 0); // Ajouter une propriété pour stocker la dernière position
 
         CelestialBody.allPlanets.push(this);
@@ -36,8 +37,6 @@ class CelestialBody {
             this.createOrbitAnimation();
         }
 
-
-        
         if (name.toLowerCase() === "soleil") {
             material.emissiveColor = new BABYLON.Color3(1, 0.5, 0); // Couleur émissive orange
 
@@ -272,12 +271,32 @@ class CelestialBody {
         this.mesh.animations.push(orbitAnimation);
 
         // Démarrez l'animation avec une durée basée sur la période orbitale
-        this.scene.beginAnimation(this.mesh, 0, 360, true, (360 / this.orbitalPeriod / 30) * CelestialBody.speedMultiplier);
-
+        
         // Créez une ligne pour l'orbite
         this.orbitLine = BABYLON.MeshBuilder.CreateLines(`${this.name}OrbitLine`, { points: orbitPath }, this.scene);
         this.orbitLine.color = new BABYLON.Color3(1, 1, 1); // Couleur blanche pour la ligne d'orbite
         this.orbitLine.alpha = 0.2;
+        
+        // === Nouvelle Animation : Rotation de la planète sur elle-même ===
+        const rotationAnimation = new BABYLON.Animation(
+            `${this.name}RotationAnimation`,
+            "rotation.y",
+            60, // fréquence d'images (frame rate)
+            BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+        );
+        
+        const rotationFrames = [
+            { frame: 0, value: 0 },
+            { frame: 360, value: BABYLON.Tools.ToRadians(360) } // Une rotation complète
+        ];
+        
+        rotationAnimation.setKeys(rotationFrames);
+
+        // Ajoutez l'animation de rotation au mesh
+        this.mesh.animations.push(rotationAnimation);
+
+        this.scene.beginAnimation(this.mesh, 0, 360, true, (360 / this.orbitalPeriod / 30) * CelestialBody.speedMultiplier);
     }
 
     updateOrbitAnimationSpeed() {

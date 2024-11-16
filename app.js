@@ -148,7 +148,8 @@ const loadCelestialBodies = async (scene) => {
             planet.distanceFromSun * 10,
             planet.texture,
             scene,
-            planet.orbitalPeriod
+            planet.orbitalPeriod,
+            planet.rotationPeriod
             
         );
         celestialBodies.push(celestialBody);
