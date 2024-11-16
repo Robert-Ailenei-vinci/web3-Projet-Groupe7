@@ -7,7 +7,7 @@
         "texture": "assets/textures/texture_mercure.jpg",
         "color": "#b7b7b7",
         "orbitalPeriod": 88,
-        "rotationPeriod": 58.6,
+        "rotationPeriod": 1407.6,
         "moons": 0
       },
       {
@@ -17,7 +17,7 @@
         "texture": "assets/textures/texture_venus.jpg",
         "color": "#d2b48c",
         "orbitalPeriod": 225,
-        "rotationPeriod": -243,
+        "rotationPeriod": -5832,
         "moons": 0
       },
       {
@@ -89,7 +89,7 @@
             "texture": "assets/textures/texture_soleil.jpg",
             "color": "#ffcc00",
             "orbitalPeriod": 0,
-            "rotationPeriod": 25,
+            "rotationPeriod": 600 ,
             "moons": 0
           }
     ]
