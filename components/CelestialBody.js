@@ -65,26 +65,14 @@ class CelestialBody {
         }));
         // Update label visibility on each render
     }
-    updateOrbit() {
-        this.angle += this.orbitalSpeed;
-        this.mesh.position.x = this.distanceFromSun * Math.cos(this.angle);
-        this.mesh.position.z = this.distanceFromSun * Math.sin(this.angle);
-    }
+   
     static updateCameraTarget() {
         if (CelestialBody.selectedPlanet) {
             const selectedPlanet = CelestialBody.selectedPlanet;
             selectedPlanet.scene.activeCamera.target = selectedPlanet.mesh.position;
         }
     }
-    static updateAllOrbitalSpeeds(newSpeed) {
-        CelestialBody.allPlanets.forEach(planet => {
-            planet.orbitalSpeed = newSpeed;
-        });
-    }
-
-    rotate(speed) {
-        this.mesh.rotation.y += speed;
-    }
+    
 
     // Créer un label 2D
     createLabel() {
@@ -237,12 +225,6 @@ class CelestialBody {
     }
     
 
-
-    static get speedMultiplier() {
-        return document.getElementById("mySlider").value;
-    }
-    
-    
     createOrbitAnimation() {
         // Créez une animation de position pour simuler une orbite circulaire
         const orbitAnimation = new BABYLON.Animation(
