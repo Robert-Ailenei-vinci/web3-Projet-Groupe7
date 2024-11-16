@@ -268,11 +268,8 @@ class CelestialBody {
     static get speedMultiplier() {
         return document.getElementById("mySlider").value;
     }
-    static updateAllAnimationsSpeed(newSpeed) {
-        CelestialBody.allPlanets.forEach(planet => {
-            planet.rotationSpeed = newSpeed;
-        });
-    }
+    
+    
     createOrbitAnimation() {
         // Créez une animation de position pour simuler une orbite circulaire
         const orbitAnimation = new BABYLON.Animation(

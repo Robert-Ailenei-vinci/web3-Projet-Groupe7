@@ -176,10 +176,7 @@ loadCelestialBodies(scene).then(celestialBodies => {
     engine.runRenderLoop(() => {
         scene.render();
         CelestialBody.updateCameraTarget();
-        // Faire tourner chaque corps céleste
-        celestialBodies.forEach(body => {
-            body.updateOrbit(); // Ajuster la vitesse de rotation ici
-        });
+       
         if (CelestialBody.selectedPlanet) {
             scene.activeCamera.target = CelestialBody.selectedPlanet.mesh.position;
         }
