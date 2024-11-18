@@ -32,6 +32,24 @@ const createScene = () => {
     sunPointLight.specular = new BABYLON.Color3(1, 1, 0.8); // Jaune-rougeâtre
     sunPointLight.intensity = 1; // Augmenter l'intensité de la lumière
 
+// Ajouter le post-process de volumetric light scattering
+const volumetricLightScattering = new BABYLON.VolumetricLightScatteringPostProcess(
+    'vls',
+    1.0,
+    scene.activeCamera,
+    null,
+    100,
+    BABYLON.Texture.BILINEAR_SAMPLINGMODE,
+    engine,
+    false
+);
+
+// Optionnel : ajuster les propriétés du post-process
+volumetricLightScattering.exposure = 0.2;
+volumetricLightScattering.decay = 0.96815;
+volumetricLightScattering.weight = 0.58767;
+volumetricLightScattering.density = 10;
+
  // Ajouter une lumière hémisphérique pour l'éclairage ambiant
  //c est pour la patie de la planete qui n est pas illuminee directement par le soleil.
     const ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 1, 0), scene);
