@@ -16,8 +16,7 @@ class CelestialBody {
         this.angle = 0; // Vitesse de rotation par défaut
         this.rotationPeriod = rotationPeriod * 0.01;
         this.lastPosition = new BABYLON.Vector3(distanceFromSun, 0, 0); // Ajouter une propriété pour stocker la dernière position
-        this.mb=null;
- 
+
         CelestialBody.allPlanets.push(this);
 
        
