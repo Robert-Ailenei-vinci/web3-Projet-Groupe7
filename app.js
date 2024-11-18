@@ -1,5 +1,7 @@
 import CelestialBody from './components/CelestialBody.js';
 import { createShootingStar } from './shootingStars.js';
+//import * as BABYLON from '../web3-Projet-Groupe7/node_modules/babylonjs/babylon.max.js';
+import '../web3-Projet-Groupe7/node_modules/babylonjs-post-process/babylonjs.postProcess.js';
 const canvas = document.getElementById('renderCanvas');
 const engine = new BABYLON.Engine(canvas, true);
 
@@ -110,7 +112,6 @@ const createScene = () => {
 
 // Créer des étoiles filantes toutes les 5 secondes
 setInterval(createRandomShootingStar, 5000);
-  // Créer des nuages cosmiques
     return { scene, mainCamera };
 };
 
