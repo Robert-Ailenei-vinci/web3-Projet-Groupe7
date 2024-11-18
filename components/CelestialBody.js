@@ -1,6 +1,5 @@
 import planetDataRetrieval from './api/planetDataRetrieval.js';
 import { uiPlanetDetails, addRow } from './uiPlanetDetails/uiPlanetDetails.js';
-
 class CelestialBody {
     static selectedPlanet = null; // Propriété statique pour la planète actuellement sélectionnée
     static allPlanets = [];
@@ -18,6 +17,7 @@ class CelestialBody {
         this.rotationPeriod = rotationPeriod * 0.01;
         this.lastPosition = new BABYLON.Vector3(distanceFromSun, 0, 0); // Ajouter une propriété pour stocker la dernière position
         this.mb=null;
+ 
         CelestialBody.allPlanets.push(this);
 
        
