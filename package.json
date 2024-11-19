@@ -9,8 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "babylonjs": "^7.32.3",
-    "babylonjs-gui": "^7.32.3"
+    "babylonjs": "^7.34.1",
+    "babylonjs-gui": "^7.32.3",
+    "babylonjs-post-process": "^7.34.1"
   },
   "devDependencies": {
     "live-server": "^1.2.0"

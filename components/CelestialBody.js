@@ -1,6 +1,5 @@
 import planetDataRetrieval from './api/planetDataRetrieval.js';
 import { uiPlanetDetails, addRow } from './uiPlanetDetails/uiPlanetDetails.js';
-
 class CelestialBody {
     static selectedPlanet = null; // Propriété statique pour la planète actuellement sélectionnée
     static allPlanets = [];
@@ -17,7 +16,8 @@ class CelestialBody {
         this.angle = 0; // Vitesse de rotation par défaut
         this.rotationPeriod = rotationPeriod * 0.01;
         this.lastPosition = new BABYLON.Vector3(distanceFromSun, 0, 0); // Ajouter une propriété pour stocker la dernière position
-
+        this.mb=null;
+ 
         CelestialBody.allPlanets.push(this);
 
        
@@ -73,7 +73,17 @@ class CelestialBody {
         }
     }
     
+// Fonction pour changer de caméra et réassigner le MotionBlurPostProcess
+switchCamera(newCamera) {
+    // Supprimer l'ancien post-process
+    if (this.mb) {
+        this.mb.dispose();
+    }
 
+    // Créer un nouveau post-process pour la nouvelle caméra
+    this.mb = new BABYLON.MotionBlurPostProcess('mb', newCamera.getScene(), 1.0, newCamera);
+    this.mb.motionStrength = 10;
+}
     // Créer un label 2D
     createLabel() {
         // Créer une texture dynamique pour le GUI
@@ -162,7 +172,8 @@ class CelestialBody {
         // Basculer vers la caméra d'orbite
         this.scene.activeCamera = this.orbitCamera;
         this.orbitCamera.attachControl(this.scene.getEngine().getRenderingCanvas(), true); // Permettre le contrôle par l'utilisateur
-
+ // Appeler switchCamera pour réassigner le MotionBlurPostProcess
+ this.switchCamera(this.orbitCamera);
 
         const grid = uiPlanetDetails();
         this.uiRect = grid.rect; // Stockez une référence dans l'instance de classe
