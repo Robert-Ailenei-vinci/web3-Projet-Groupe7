@@ -1,36 +1,46 @@
 import planetDataRetrieval from './api/planetDataRetrieval.js';
 import { uiPlanetDetails, addRow } from './uiPlanetDetails/uiPlanetDetails.js';
-
 class CelestialBody {
     static selectedPlanet = null; // Propriété statique pour la planète actuellement sélectionnée
-    
-    constructor(name, radius, position, texture, scene, orbitalPeriod, distanceFromSun) {
+    static allPlanets = [];
+
+    constructor(name, radius, distanceFromSun, texture, scene,orbitalPeriod,rotationPeriod) {
         this.name = name;
         this.radius = radius;
-        this.position = position;
+        this.distanceFromSun = distanceFromSun;
         this.texture = texture;
         this.scene = scene;
         this.isDetailsVisible = false; // Détails non affichés par défaut
         this.orbitalPeriod = orbitalPeriod;
-        this.distanceFromSun = distanceFromSun;
+        this.orbitalSpeed = 0.1;
+        this.angle = 0; // Vitesse de rotation par défaut
+        this.rotationPeriod = rotationPeriod * 0.01;
+        this.lastPosition = new BABYLON.Vector3(distanceFromSun, 0, 0); // Ajouter une propriété pour stocker la dernière position
+        //this.mb=null;
+ 
+        CelestialBody.allPlanets.push(this);
 
-
-        // Define the min and max zoom limits
-        this.minZoom = radius * 3.5;  // Minimum zoom in
-        this.maxZoom = radius * 120;  // Maximum zoom out
+       
 
         // Create the mesh for the celestial body
         this.mesh = BABYLON.MeshBuilder.CreateSphere(name, { diameter: radius, segments: 16 }, scene);
-        this.mesh.position = position;
+        this.mesh.position = new BABYLON.Vector3(this.distanceFromSun, 0, 0);;
 
         // Apply the material
         const material = new BABYLON.StandardMaterial(`${name}Material`, scene);
         material.diffuseTexture = new BABYLON.Texture(texture, scene);
-        
+
+        if (name.toLowerCase() !== "soleil") {
+            // Définir la couleur spéculaire sur noir pour un matériau mat
+            material.specularColor = new BABYLON.Color3(0, 0, 0);
+            // Créer l'animation de l'orbite
+            this.createOrbitAnimation();
+        }
+
         if (name.toLowerCase() === "soleil") {
             material.emissiveColor = new BABYLON.Color3(1, 0.5, 0); // Couleur émissive orange
 
-// Create a glow layer for the halo effect
+        // Create a glow layer for the halo effect
         const glowLayer = new BABYLON.GlowLayer("glow", scene);
         new BABYLON.GlowLayer("glow", scene, { 
             mainTextureFixedSize: 256,
@@ -43,27 +53,8 @@ class CelestialBody {
         this.mesh.material = material;
      
         
-
-        // Define a fixed camera offset position (adjusted for a good view)
-        const cameraOffset = new BABYLON.Vector3(radius * 3, radius * 1.5, radius * 2);  // Adjust as needed
-
-        // Create a TargetCamera for the celestial body
-        this.camera = new BABYLON.TargetCamera(`${name}Camera`, position.add(cameraOffset), scene);
-
-        // Set the camera's target to the celestial body
-        this.camera.setTarget(this.mesh.position);
-
-        // Attach the camera controls for interactivity
-        this.camera.attachControl(scene.getEngine().getRenderingCanvas(), true);
-
-        // Set up an event listener to handle zooming
-        scene.getEngine().getRenderingCanvas().addEventListener('wheel', (event) => this.handleZoom(event));
-
         // Create the label for the celestial body
         this.createLabel();
-
-        this.createOrbit();
-
 
         // Enable interaction with the celestial body's mesh
         this.mesh.actionManager = new BABYLON.ActionManager(scene);
@@ -73,14 +64,26 @@ class CelestialBody {
             this.handleInteraction();
         }));
         // Update label visibility on each render
-        scene.onBeforeRenderObservable.add(() => this.updateLabelVisibility());
     }
-
-
-    rotate(speed) {
-        this.mesh.rotation.y += speed;
+   
+    static updateCameraTarget() {
+        if (CelestialBody.selectedPlanet) {
+            const selectedPlanet = CelestialBody.selectedPlanet;
+            selectedPlanet.scene.activeCamera.target = selectedPlanet.mesh.position;
+        }
     }
+    
+// Fonction pour changer de caméra et réassigner le MotionBlurPostProcess
+//switchCamera(newCamera) {
+    // Supprimer l'ancien post-process
+//    if (this.mb) {
+ //       this.mb.dispose();
+   // }
 
+    // Créer un nouveau post-process pour la nouvelle caméra
+//    this.mb = new BABYLON.MotionBlurPostProcess('mb', newCamera.getScene(), 1.0, newCamera);
+//    this.mb.motionStrength = 10;
+//}
     // Créer un label 2D
     createLabel() {
         // Créer une texture dynamique pour le GUI
@@ -118,25 +121,6 @@ class CelestialBody {
         this.labelCircle = circle;
     }
 
-    createOrbit() {
-        // Créer une orbite circulaire (torus)
-        const orbitPath = BABYLON.MeshBuilder.CreateTorus("orbit", {
-            diameter: this.distanceFromSun * 2 * 5,  // Diamètre basé sur la distance du Soleil
-            thickness: 0.005,  // Réduire l'épaisseur de l'orbite
-            tessellation: 100  // Nombre de segments pour la courbure
-        }, this.scene);
-    
-        orbitPath.position = new BABYLON.Vector3(0, 0, 0);  // Placer l'orbite au centre (Soleil)
-    
-        const orbitMaterial = new BABYLON.StandardMaterial("orbitMaterial", this.scene);
-        orbitMaterial.wireframe = true; 
-        orbitMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-        orbitPath.material = orbitMaterial;
-    
-        this.orbitPath = orbitPath;  // Référence à l'orbite
-    }
-    
-
     // Méthode pour gérer l'interaction Lors du clic sur un astre ou son label
     async handleInteraction() {
         // Si cette planète est déjà sélectionnée, ignorez le clic
@@ -150,13 +134,50 @@ class CelestialBody {
         // Mettre à jour la planète sélectionnée
         CelestialBody.selectedPlanet = this;
 
-        this.scene.activeCamera = this.camera;
-        this.scene.activeCamera.radius = this.radius * 3;
+        // Créer ou configurer une caméra ArcRotate pour orbiter autour de la planète
+        if (!this.orbitCamera) {
+            this.orbitCamera = new BABYLON.ArcRotateCamera(
+                `${this.name}OrbitCamera`,
+                BABYLON.Tools.ToRadians(90), // angle horizontal de départ
+                BABYLON.Tools.ToRadians(75), // angle vertical de départ
+                this.radius * 10, // distance initiale de la caméra
+                this.mesh.position.clone(), // point de focalisation (centre de la planète)
+                this.scene
+            );
+            // Configuration des limites de la caméra
+            this.orbitCamera.lowerRadiusLimit = this.radius * 2;
+            this.orbitCamera.upperRadiusLimit = this.radius * 20;
+            this.orbitCamera.angularSensibilityX = 1000; // Réduire la sensibilité de rotation
+            this.orbitCamera.angularSensibilityY = 1000;
+            this.orbitCamera.wheelPrecision = 50; // Ajuster la précision de la molette
+        
+            this.scene.onBeforeRenderObservable.add(() => {
+                if (this.scene.activeCamera === this.orbitCamera) {
+                    // Mettre à jour la position cible de la caméra en douceur
+                    const targetPosition = this.mesh.position;
+                    const smoothFactor = 0.1; // Facteur de lissage (ajuster selon les besoins)
+                    
+                    this.orbitCamera.target = BABYLON.Vector3.Lerp(
+                        this.orbitCamera.target,
+                        targetPosition,
+                        smoothFactor
+                    );
+                }
+            });
+        } else {
+            // Mettre à jour la position cible si la caméra existe déjà
+            this.orbitCamera.target = this.mesh.position.clone();
+        }
+
+        // Basculer vers la caméra d'orbite
+        this.scene.activeCamera = this.orbitCamera;
+        this.orbitCamera.attachControl(this.scene.getEngine().getRenderingCanvas(), true); // Permettre le contrôle par l'utilisateur
+ // Appeler switchCamera pour réassigner le MotionBlurPostProcess
+ //this.switchCamera(this.orbitCamera);
 
         const grid = uiPlanetDetails();
         this.uiRect = grid.rect; // Stockez une référence dans l'instance de classe
         this.isDetailsVisible = true;
-
 
 
             // Évitez de rajouter plusieurs fois l'événement en vérifiant d'abord
@@ -164,6 +185,7 @@ class CelestialBody {
                 const returnButton = document.getElementById('returnButton');
                 returnButton.addEventListener('click', () => {
                     this.hideDetails();
+                    this.orbitCamera.detachControl(); // Détache le contrôle utilisateur de cette caméra
                     CelestialBody.selectedPlanet = null; // Réinitialisez la planète sélectionnée
                 });
                 this.returnButtonListenerAdded = true;
@@ -214,51 +236,85 @@ class CelestialBody {
     }
     
 
-    // Met à jour la visibilité du label en fonction de la distance de la caméra et des obstructions
-    updateLabelVisibility() {
-        const camera = this.scene.activeCamera;
-        const distance = BABYLON.Vector3.Distance(camera.position, this.mesh.position);
-    
-        // Ajuste l'opacité du label en fonction de la distance (seuil = radius * 5 par exemple)
-        if (distance < this.radius * 5) {
-            this.labelCircle.alpha = 0; // Rendre l'étiquette invisible quand proche
-            // this.labelLine.alpha = 0; // Rendre l'étiquette invisible quand proche
-        } else {
-            this.labelCircle.alpha = 1; // Rendre l'étiquette visible quand éloigné
-            // this.labelLine.alpha = 1; // Rendre l'étiquette visible quand éloigné
+    createOrbitAnimation() {
+        // Créez une animation de position pour simuler une orbite circulaire
+        const orbitAnimation = new BABYLON.Animation(
+            `${this.name}OrbitAnimation`,
+            "position",
+            60, // fréquence d'images (frame rate)
+            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+        );
+
+        // Définissez les étapes de l'animation
+        const frames = [];
+        const orbitPath = []; // Points pour dessiner la ligne d'orbite
+        for (let i = 0; i <= 360; i += 1) {
+            const radians = BABYLON.Tools.ToRadians(i);
+            const x = Math.cos(radians) * this.distanceFromSun;
+            const z = Math.sin(radians) * this.distanceFromSun;
+            frames.push({ frame: i, value: new BABYLON.Vector3(x, 0, z) });
+            orbitPath.push(new BABYLON.Vector3(x, 0, z)); // Ajouter le point au chemin d'orbite
         }
-    
-        // Créer un rayon partant de la caméra vers le label
-        const direction = this.mesh.position.subtract(camera.position).normalize();
-        const ray = new BABYLON.Ray(camera.position, direction, distance);
-    
-        // Utiliser le raycast pour vérifier les collisions
-        const hit = this.scene.pickWithRay(ray, (mesh) => mesh !== this.mesh);
-    
-    
-        // Les orbites ne sont jamais cachées, donc on n'intervient pas dessus ici
+
+        // Appliquez les images-clés à l'animation
+        orbitAnimation.setKeys(frames);
+
+        // Ajoutez l'animation à la planète
+        this.mesh.animations.push(orbitAnimation);
+
+        // Démarrez l'animation avec une durée basée sur la période orbitale
+        
+        // Créez une ligne pour l'orbite
+        this.orbitLine = BABYLON.MeshBuilder.CreateLines(`${this.name}OrbitLine`, { points: orbitPath }, this.scene);
+        this.orbitLine.color = new BABYLON.Color3(1, 1, 1); // Couleur blanche pour la ligne d'orbite
+        this.orbitLine.alpha = 0.2;
+        
+        // === Nouvelle Animation : Rotation de la planète sur elle-même ===
+        const rotationAnimation = new BABYLON.Animation(
+            `${this.name}RotationAnimation`,
+            "rotation.y",
+            60, // fréquence d'images (frame rate)
+            BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+        );
+        
+        const rotationFrames = [
+            { frame: 0, value: 0 },
+            { frame: 360, value: BABYLON.Tools.ToRadians(360) } // Une rotation complète
+        ];
+        
+        rotationAnimation.setKeys(rotationFrames);
+
+        // Ajoutez l'animation de rotation au mesh
+        this.mesh.animations.push(rotationAnimation);
+
+        this.scene.beginAnimation(this.mesh, 0, 360, true, (360 / this.orbitalPeriod / 30) * CelestialBody.speedMultiplier);
+    }
+
+    updateOrbitAnimationSpeed() {
+        // Find the existing animation
+        const animatable = this.scene.getAnimatableByTarget(this.mesh);
+        if (animatable) {
+            // Update the speed ratio of the animation
+            animatable.speedRatio = (360 / this.orbitalPeriod / 30) * CelestialBody.speedMultiplier;
+        }
     }
     
-    
-
-    // Méthode pour gérer le zoom avec la molette de la souris
-    handleZoom(event) {
-        const zoomFactor = 1.1; // Facteur de zoom de 10%
-
-        if (this.scene.activeCamera === this.camera) {
-            if (event.deltaY < 0) {
-                // Zoom avant (molette vers le haut) - réduire le rayon
-                this.camera.radius = Math.max(this.minZoom, this.camera.radius / zoomFactor);
-            } else {
-                // Zoom arrière (molette vers le bas) - augmenter le rayon
-                this.camera.radius = Math.min(this.camera.radius * zoomFactor);
+    static updateAllAnimationsSpeed(newSpeed) {
+        CelestialBody.allPlanets.forEach(planet => {
+            if (planet.name.toLowerCase() !== "soleil") {
+                planet.orbitalSpeed = newSpeed;
+                planet.updateOrbitAnimationSpeed();
             }
-        }
+        });
+        CelestialBody.updateCameraTarget();
+    }
+    
+    static get speedMultiplier() {
+        return parseFloat(document.getElementById("mySlider").value);
     }
 
 }
-
-
-
 // Exporter la classe pour l'utiliser dans d'autres fichiers
 export default CelestialBody;

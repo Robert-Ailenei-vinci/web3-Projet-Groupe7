@@ -1,0 +1,115 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+#renderCanvas {
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+#outputSlider{
+    position: absolute;
+    bottom: 75px;
+    right: 10px;
+    color: white;
+}
+
+#mySlider {
+    position: absolute;
+    bottom: 60px;
+    right: 10px;
+}
+
+#mySlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #FFD700;
+    cursor: pointer;
+    border-radius: 50%;
+    margin-top: -3px;
+}
+
+#mySlider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 8px;
+    background: #FFD700;
+    border-radius: 5px;
+}
+
+/* Style pour le bouton de retour */
+#returnButton {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #FFFFFF;
+    background-color: #333;
+    border: 2px solid #FFD700;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Arial', sans-serif; /* Ajout de la police */
+}
+
+#returnButton:hover {
+    background-color: #FFD700;
+    color: #333;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+#returnButton:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Style pour le menu des astres */
+#celestialMenu {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 5px;
+    border: 2px solid #FFD700;
+    width: 180px;
+    font-family: 'Arial', sans-serif; /* Assure la même police que le bouton */
+    color: white;
+}
+
+#celestialMenu h3 {
+    font-size: 16px;
+    color: #FFD700;
+    text-align: center;
+    margin: 0;
+    font-weight: bold;
+}
+
+#celestialList {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+#celestialList li {
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 14px;
+}
+
+#celestialList li:hover {
+    color: #333;
+    background-color: #FFD700;
+}
+
+

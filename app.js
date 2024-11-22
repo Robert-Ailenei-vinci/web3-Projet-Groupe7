@@ -1,5 +1,7 @@
 import CelestialBody from './components/CelestialBody.js';
 import { createShootingStar } from './shootingStars.js';
+//import * as BABYLON from '../web3-Projet-Groupe7/node_modules/babylonjs/babylon.max.js';
+//import '../web3-Projet-Groupe7/node_modules/babylonjs-post-process/babylonjs.postProcess.js';
 const canvas = document.getElementById('renderCanvas');
 const engine = new BABYLON.Engine(canvas, true);
 
@@ -26,9 +28,10 @@ const createScene = () => {
     
     // Ajouter une lumière point pour simuler le soleil
     const sunPointLight = new BABYLON.PointLight("sunPointLight", new BABYLON.Vector3(0, 0, 0), scene);
-    sunPointLight.diffuse = new BABYLON.Color3(1, 0.5, 0); // Orange
-    sunPointLight.specular = new BABYLON.Color3(1, 1, 0.5); // Jaune-rougeâtre
-    sunPointLight.intensity = 30; // Augmenter l'intensité de la lumière
+    sunPointLight.diffuse = new BABYLON.Color3(1, 1, 0.7); // Orange
+    sunPointLight.specular = new BABYLON.Color3(1, 1, 0.8); // Jaune-rougeâtre
+    sunPointLight.intensity = 1; // Augmenter l'intensité de la lumière
+
 
  // Ajouter une lumière hémisphérique pour l'éclairage ambiant
  //c est pour la patie de la planete qui n est pas illuminee directement par le soleil.
@@ -42,15 +45,15 @@ const createScene = () => {
     // Fonction pour créer un système de particules pour les étoiles
     const createStarParticleSystem = (color, number, type) => {
         const starParticleSystem = new BABYLON.ParticleSystem("stars", number, scene);
-        starParticleSystem.particleTexture = new BABYLON.Texture("../skybox/blanc.png", scene); // Assurez-vous d'avoir une texture d'étoile
+        starParticleSystem.particleTexture = new BABYLON.Texture("./skybox/blanc.png", scene); // Assurez-vous d'avoir une texture d'étoile
     
         // Configurer les particules
         starParticleSystem.color1 = color; // Couleur des particules
         starParticleSystem.color2 = color; // Couleur des particules
         starParticleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0); // Couleur des particules mortes
     
-        starParticleSystem.minSize = 0.5; // Taille minimale des particules
-        starParticleSystem.maxSize = 3; // Taille maximale des particules
+        starParticleSystem.minSize = 7; // Taille minimale des particules
+        starParticleSystem.maxSize = 8; // Taille maximale des particules
     
         starParticleSystem.minLifeTime = Number.MAX_VALUE; // Durée de vie minimale des particules (infinie)
         starParticleSystem.maxLifeTime = Number.MAX_VALUE; // Durée de vie maximale des particules (infinie)
@@ -73,7 +76,7 @@ const createScene = () => {
     
         // Définir la fonction de positionnement des particules
         starParticleSystem.startPositionFunction = function(worldMatrix, positionToUpdate) {
-            const position = randomPositionInHollowSphere(1400, 2600); // Distance minimale et maximale des étoiles
+            const position = randomPositionInHollowSphere(6000, 9000); // Distance minimale et maximale des étoiles
             BABYLON.Vector3.TransformCoordinatesToRef(position, worldMatrix, positionToUpdate);
         };
     
@@ -96,7 +99,7 @@ const createScene = () => {
     };
     
     // Créer des systèmes de particules pour les étoiles de différentes couleurs
-    createStarParticleSystem(new BABYLON.Color4(1, 1, 1, 1), 6000, "normale"); // Étoiles blanches
+    createStarParticleSystem(new BABYLON.Color4(1, 1, 1, 1), 18000, "normale"); // Étoiles blanches
     createStarParticleSystem(new BABYLON.Color4(1, 1, 0, 1), 1000, "aura"); // Étoiles jaunes avec glow layer
     createStarParticleSystem(new BABYLON.Color4(1, 0.5, 0, 1), 500 , "aura"); // Étoiles cyan
     // Créer des étoiles filantes périodiquement
@@ -110,7 +113,6 @@ const createScene = () => {
 
 // Créer des étoiles filantes toutes les 5 secondes
 setInterval(createRandomShootingStar, 5000);
-  // Créer des nuages cosmiques
     return { scene, mainCamera };
 };
 
@@ -141,17 +143,29 @@ const loadCelestialBodies = async (scene) => {
 
     // Itérer à travers chaque planète et créer un CelestialBody
     data.planets.forEach(planet => {
-        const position = new BABYLON.Vector3(planet.distanceFromSun * 5, 0, 0); // Ajuster l'échelle
-        const celestialBody = new CelestialBody(planet.name, planet.radius, position, planet.texture, scene, planet.orbitalPeriod, planet.distanceFromSun);
+        const position = new BABYLON.Vector3(planet.distanceFromSun * 10, 0, 0); // Ajuster l'échelle
+        const celestialBody = new CelestialBody(
+            planet.name,
+            planet.radius,
+            planet.distanceFromSun * 10,
+            planet.texture,
+            scene,
+            planet.orbitalPeriod,
+            planet.rotationPeriod
+            
+        );
         celestialBodies.push(celestialBody);
     });
 
     // Ajouter le Soleil comme un corps céleste
     data.astralBodies.forEach(sun => {
         const position = new BABYLON.Vector3(sun.distanceFromSun, 0, 0); // Position du soleil
-        const celestialBody = new CelestialBody(sun.name, sun.radius, position, sun.texture, scene, sun.orbitalPeriod, sun.distanceFromSun);
+        const celestialBody = new CelestialBody(sun.name, sun.radius, sun.distanceFromSun, sun.texture, scene);
         celestialBodies.push(celestialBody);
     });
+
+    // Remplir le menu avec les astres
+    populateCelestialMenu(celestialBodies);
 
     return celestialBodies;
 };
@@ -164,15 +178,51 @@ loadCelestialBodies(scene).then(celestialBodies => {
     // Lancer la boucle de rendu
     engine.runRenderLoop(() => {
         scene.render();
-
-        // Faire tourner chaque corps céleste
-        celestialBodies.forEach(body => {
-            body.rotate(0.01); // Ajuster la vitesse de rotation ici
-        });
+        CelestialBody.updateCameraTarget();
+       
+        if (CelestialBody.selectedPlanet) {
+            scene.activeCamera.target = CelestialBody.selectedPlanet.mesh.position;
+        }
     });
 });
+
+function populateCelestialMenu(celestialBodies) {
+    const celestialList = document.getElementById('celestialList');
+
+    celestialBodies.forEach(body => {
+        const listItem = document.createElement('li');
+        listItem.textContent = body.name;
+        listItem.style.cursor = "pointer";
+        listItem.style.padding = "5px";
+        
+        // Ajouter un écouteur de clic qui appelle handleInteraction de l'astre correspondant
+        listItem.addEventListener('click', () => body.handleInteraction());
+
+        celestialList.appendChild(listItem);
+    });
+}
 
 // Adapter la taille du canvas lors du redimensionnement de la fenêtre
 window.addEventListener('resize', () => {
     engine.resize();
+});
+
+const slider = document.getElementById("mySlider");
+const outputSlider = document.getElementById("outputSlider");
+
+outputSlider.innerHTML = `Vitesse: x${slider.value}`;
+
+slider.oninput = function() {
+    outputSlider.innerHTML = `Vitesse: x${slider.value}`;
+    
+    // Update the rotation speed for all planets
+    CelestialBody.updateAllAnimationsSpeed(parseFloat(slider.value));
+    
+    // Ensure the camera follows the selected planet
+    if (CelestialBody.selectedPlanet) {
+        scene.activeCamera.target = CelestialBody.selectedPlanet.mesh.position;
+    }
+}
+document.getElementById("mySlider").addEventListener("input", () => {
+    CelestialBody.updateAllAnimationsSpeed();
 });
