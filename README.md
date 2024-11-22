@@ -3,6 +3,20 @@
 
 Ce projet est une simulation interactive du système solaire utilisant Babylon.js. Il permet de visualiser les orbites et caractéristiques des planètes en 3D avec des animations, des étiquettes et un menu pour interagir facilement avec chaque astre. Les données des planètes sont fournies par l'API [Le Système Solaire API](https://api.le-systeme-solaire.net/rest/bodies/).
 
+Le site est déployé à l'adresse suivante :
+https://robert-ailenei-vinci.github.io/web3-Projet-Groupe7/.
+La branche gh-pages est utilisée pour gérer le déploiement.
+
+Installation locale
+Si le site est inaccessible, vous pouvez l'installer et le lancer localement en suivant les étapes ci-dessous.
+
+Membre du groupe
+ - Robert Ailenei
+ - Flaviu Bilic
+ - Lars Hanquet
+ - Rafael Millor
+ - Resul Ramadani
+
 ## Fonctionnalités
 
 - Visualisation des orbites des planètes en 3D.
