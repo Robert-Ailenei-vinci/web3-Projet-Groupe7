@@ -7,7 +7,7 @@ Le site est déployé à l'adresse suivante :
 https://robert-ailenei-vinci.github.io/web3-Projet-Groupe7/.
 La branche gh-pages est utilisée pour gérer le déploiement.
 
-Installation locale
+
 Si le site est inaccessible, vous pouvez l'installer et le lancer localement en suivant les étapes ci-dessous.
 
 Membre du groupe
