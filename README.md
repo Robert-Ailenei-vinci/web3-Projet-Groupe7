@@ -10,6 +10,8 @@ La branche gh-pages est utilisée pour gérer le déploiement.
 
 Si le site est inaccessible, vous pouvez l'installer et le lancer localement en suivant les étapes ci-dessous.
 
+Une video de presentation est disponible ici : https://www.youtube.com/watch?v=I2x58_137Oc
+
 Membre du groupe
  - Robert Ailenei
  - Flaviu Bilic
